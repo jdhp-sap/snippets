@@ -18,11 +18,13 @@ from matplotlib.animation import FuncAnimation
 
 from astropy import units as u
 
-# Init matplotlib
+# INIT MATPLOTLIB #########################################
+
 plt.style.use("ggplot")
 fig, ax = plt.subplots()
 
-# Load the camera
+# LOAD THE CAMERA #########################################
+
 #geom = io.CameraGeometry.from_name("hess", 1)
 geom = io.make_rectangular_camera_geometry()
 
@@ -30,7 +32,8 @@ disp = visualization.CameraDisplay(geom, ax=ax)
 disp.cmap = plt.cm.terrain
 disp.add_colorbar(ax=ax)
 
-# Plot
+# PLOT ####################################################
+
 centroid = np.random.uniform(-0.5, 0.5, size=2)
 width = np.random.uniform(0, 0.01)
 length = np.random.uniform(0, 0.03) + width
@@ -65,7 +68,8 @@ image, sig, bg = mock.make_mock_shower_image(geom,
                                              intensity=intens,
                                              nsb_level_pe=5000)
 
-# Normalize pixels value
+# NORMALIZE PIXELS VALUE ##################################
+
 image /= image.max()
 
 disp.image = image
