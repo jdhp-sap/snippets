@@ -39,12 +39,13 @@ def save_image(img, output_file_path):
     plt.savefig(output_file_path)
 
 
-def plot_image(img):
+def plot_image(img, title=""):
     """
     img should be a 2D numpy array.
     """
     fig = plt.figure(figsize=(8.0, 8.0))
     ax = fig.add_subplot(111)
+    ax.set_title(title)
     ax.imshow(img, interpolation='nearest', cmap=cm.gray)
     plt.show()
 
@@ -100,7 +101,7 @@ def main():
             tmp_img = tmp_img - img
 
     #print(tmp_img)
-    plot_image(tmp_img)
+    plot_image(tmp_img, title="Sub.")
 
 if __name__ == "__main__":
     main()
