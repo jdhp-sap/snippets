@@ -1,0 +1,5 @@
+docs/
+*.png
+*.fits
+*.mr
+.DS_Store
