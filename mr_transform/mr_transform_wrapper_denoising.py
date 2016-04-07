@@ -93,15 +93,10 @@ def main():
     if output_imgs.ndim != 3:
         raise Exception("Unexpected error: the output FITS file should contain a 3D array.")
 
-    tmp_img = input_img
-
     for img_index, img in enumerate(output_imgs):
-        #plot_image(img)
-        if 0 < img_index <= 2:
-            tmp_img = tmp_img - img
+        plot_image(img, title="Plane {}".format(img_index))
 
-    #print(tmp_img)
-    plot_image(tmp_img, title="Sub.")
 
 if __name__ == "__main__":
     main()
+
