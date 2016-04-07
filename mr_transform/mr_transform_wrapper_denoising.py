@@ -93,8 +93,28 @@ def main():
     if output_imgs.ndim != 3:
         raise Exception("Unexpected error: the output FITS file should contain a 3D array.")
 
+
+    # DENOIZE THE INPUT IMAGE WITH MR_TRANSFORM PLANES ############################
+
+    denoised_img = np.zeros(input_img.shape)
+
     for img_index, img in enumerate(output_imgs):
-        plot_image(img, title="Plane {}".format(img_index))
+
+        # Compute the standard deviation of the plane #####
+        img_sigma = np.std(img)
+
+        # Apply a threshold on the plane ##################
+        img_mask = img > (img_sigma * 3.)
+        filtered_img = img * img_mask
+
+        #plot_image(img_mask, title="Image mask for plane {}".format(img_index))
+        #plot_image(filtered_img, title="Filtered plane {}".format(img_index))
+
+        # Sum the plane ###################################
+        denoised_img = denoised_img + filtered_img
+
+    plot_image(input_img, title="Original image")
+    plot_image(denoised_img, title="Filtered image")
 
 
 if __name__ == "__main__":
