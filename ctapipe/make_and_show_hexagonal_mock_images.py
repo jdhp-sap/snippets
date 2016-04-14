@@ -2,31 +2,36 @@
 # -*- coding: utf-8 -*-
 
 """
-Example of drawing a Camera using a mock shower images (random simulation).
+Make and show simulated camera images using the "mock" simulator (random
+simulation).
 
-Taken from ctapipe/examples/camera_animation.py
+Inspired by ctapipe/examples/camera_animation.py
 
 Cf. also: https://cta-observatory.github.io/ctapipe/reco/index.html
 """
 
-import matplotlib.pylab as plt
-from ctapipe import io, visualization
-from ctapipe.reco import mock
-from matplotlib.animation import FuncAnimation
-import numpy as np
 from astropy import units as u
 
-# Init matplotlib
+import numpy as np
+import matplotlib.pylab as plt
+
+from ctapipe import io, visualization
+from ctapipe.reco import mock
+
+# INIT MATPLOTLIB #############################################################
+
 plt.style.use("ggplot")
 fig, ax = plt.subplots()
 
-# Load the camera
+# LOAD THE CAMERA #############################################################
+
 geom = io.CameraGeometry.from_name("hess", 1)
 disp = visualization.CameraDisplay(geom, ax=ax)
 disp.cmap = plt.cm.terrain
 disp.add_colorbar(ax=ax)
 
-# Plot
+# GENERATE A (RANDOM) 2D SHOWER MODEL #########################################
+
 centroid = np.random.uniform(-0.5, 0.5, size=2)
 width = np.random.uniform(0, 0.01)
 length = np.random.uniform(0, 0.03) + width
@@ -38,52 +43,25 @@ model = mock.generate_2d_shower_model(centroid=centroid,
                                       length=length,
                                       psi=angle * u.deg)
 
-# The generated image "image" is a 1D Numpy array.
-# image est probablement l'image bruitée: sig + bg
-# 
-#  image.ndim = 1
-#  image.shape = (960,)
-#
-# sig is an numpy array (what it is used for ?)
-# sig est probablement l'image non bruitée
-#
-#  sig.ndim = 1
-#  sig.shape = (960,)
-#
-# bg is an numpy array (what it is used for ?)
-# bg est probablement le bruit
-#
-#  bg.ndim = 1
-#  bg.shape = (960,)
-#
+# MAKE THE IMAGE ##############################################################
+
+# image = c * (sig + bg)
+# - "image" is the noisy image (a 1D Numpy array with one value per pixel).
+# - "sig" is the clean image (a 1D Numpy array with one value per pixel).
+# - "bg" is the background noise (a 1D Numpy array with one value per pixel).
 image, sig, bg = mock.make_mock_shower_image(geom,
                                              model.pdf,
                                              intensity=intens,
                                              nsb_level_pe=5000)
 
-# Normalize pixels value
+# NORMALIZE PIXELS VALUE ######################################################
+
 image /= image.max()
 
-disp.image = image
+# PLOT ########################################################################
+
+disp.image = image   # Show the noised signal
+#disp.image = sig    # Show the clean (unnoised) signal
+#disp.image = bg     # Show the background noise
 plt.show()
-
-print(image)
-print(type(image))
-print(image.shape)
-print(image.ndim)
-print(image[0])
-print(image.min())
-print(image.max())
-
-#print(sig)
-#print(type(sig))
-#print(sig.shape)
-#print(sig.ndim)
-#print(sig[0])
-
-#print(bg)
-#print(type(bg))
-#print(bg.shape)
-#print(bg.ndim)
-#print(bg[0])
 
