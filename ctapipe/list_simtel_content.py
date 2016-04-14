@@ -18,8 +18,8 @@ def list_simtel_content(simtel_file_path):
     # hessio_event_source returns a Python generator that streams data from an
     # EventIO/HESSIO MC data file (e.g. a standard CTA data file).
     # This generator contains ctapipe.core.Container instances ("event").
-    # Source contains few events (usually 0, 1 or 2)
     # 
+    # Parameters:
     # - max_events: maximum number of events to read
     # - allowed_tels: select only a subset of telescope, if None, all are read.
     source = hessio_event_source(simtel_file_path,
