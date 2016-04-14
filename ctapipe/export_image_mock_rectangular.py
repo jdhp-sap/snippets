@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-Example of drawing a Camera using a mock shower images (random simulation).
+Make simulated Camera images using the "mock" simulator (random simulation).
 
 Taken from ctapipe/examples/camera_animation.py
 
 Cf. also: https://cta-observatory.github.io/ctapipe/reco/index.html
 """
+
+import argparse
 
 from ctapipe import io, visualization
 from ctapipe.reco import mock
@@ -51,11 +53,6 @@ def make_an_image(image_name):
     
     image = np.array([pixel * 255 for pixel in image])
 
-    #print(image)
-    #print(image.shape)
-    #print(image.min())
-    #print(image.max())
-
     # SAVE THE IMAGE ##########################################
 
     mode = "L"       # Grayscale
@@ -69,5 +66,18 @@ def make_an_image(image_name):
 
 if __name__ == '__main__':
 
-    for i in range(50):
+    # PARSE OPTIONS ###########################################################
+
+    parser = argparse.ArgumentParser(description='Make simulated Camera images using the "mock" simulator (random simulation).')
+
+    parser.add_argument("--number", "-n", type=int, default=1, metavar="INTEGER", 
+                        help="The number of images to make")
+    args = parser.parse_args()
+
+    number_of_images = args.number
+
+    # MAKE IMAGES #############################################################
+
+    for i in range(number_of_images):
         make_an_image("ctapipe_{}.png".format(i))
+
