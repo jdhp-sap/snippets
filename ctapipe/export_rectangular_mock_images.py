@@ -4,14 +4,14 @@
 """
 Make simulated Camera images using the "mock" simulator (random simulation).
 
-Taken from ctapipe/examples/camera_animation.py
+Inspired by ctapipe/examples/camera_animation.py
 
 Cf. also: https://cta-observatory.github.io/ctapipe/reco/index.html
 """
 
 import argparse
 
-from ctapipe import io, visualization
+from ctapipe import io
 from ctapipe.reco import mock
 
 from astropy import units as u
@@ -50,7 +50,7 @@ def make_an_image(image_name):
 
     image -= image.min()
     image /= image.max()
-    
+
     image = np.array([pixel * 255 for pixel in image])
 
     # SAVE THE IMAGE ##########################################
@@ -67,10 +67,12 @@ def make_an_image(image_name):
 if __name__ == '__main__':
 
     # PARSE OPTIONS ###########################################################
+    desc = 'Make simulated Camera images using the "mock" simulator ' \
+           '(random simulation).'
+    parser = argparse.ArgumentParser(description=desc)
 
-    parser = argparse.ArgumentParser(description='Make simulated Camera images using the "mock" simulator (random simulation).')
-
-    parser.add_argument("--number", "-n", type=int, default=1, metavar="INTEGER", 
+    parser.add_argument("--number", "-n", type=int, default=1,
+                        metavar="INTEGER",
                         help="The number of images to make")
     args = parser.parse_args()
 
