@@ -63,20 +63,18 @@ def save_image(image, file_name):
     # NORMALIZE PIXELS VALUE ##################################
 
     image -= image.min()
-    image = image / image.max()
+    image /= image.max()
+    image *= 255
     
-    image = np.array([pixel * 255 for pixel in image])
-
     # CROP ####################################################
 
-    # Dirty hack...
+    # A dirty hack to get truely rectangular images without blank parts in borders...
     num_px_skipped = 8*8*4
     image = image[num_px_skipped:-num_px_skipped] 
 
     # SAVE THE IMAGE ##########################################
 
     mode = "L"       # Grayscale
-    #size = int(math.sqrt(image.size))
 
     pil_image = pil_img.new(mode, (48, 32))  # TODO
     pil_image.putdata(image)
@@ -94,17 +92,22 @@ if __name__ == '__main__':
     parser.add_argument("--telescope", "-t", type=int, default=1,
                         metavar="INTEGER",
                         help="The telescope number to query")
+
     parser.add_argument("--channel", "-c", type=int, default=0,
                         metavar="INTEGER",
                         help="The channel number to query")
+
     parser.add_argument("--event", "-e", type=int, default=0,
                         metavar="INTEGER",
                         help="The event to extract")
+
     parser.add_argument("--output", "-o", default=None,
                         metavar="PATH",
                         help="The path of the output file")
+
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
+
     args = parser.parse_args()
 
     tel_num = args.telescope
