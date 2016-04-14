@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Make and show simulated camera images using the "mock" simulator (random
-simulation).
+Make and show simulated camera images using the "mock" simulator with an
+hexagonal camera (random simulation).
 
 Inspired by ctapipe/examples/camera_animation.py
 
@@ -25,7 +25,8 @@ fig, ax = plt.subplots()
 
 # LOAD THE CAMERA #############################################################
 
-geom = io.CameraGeometry.from_name("hess", 1)
+geom = io.CameraGeometry.from_name("hess", 1)   # hexagonal geometry
+
 disp = visualization.CameraDisplay(geom, ax=ax)
 disp.cmap = plt.cm.terrain
 disp.add_colorbar(ax=ax)
@@ -63,5 +64,6 @@ image /= image.max()
 disp.image = image   # Show the noised signal
 #disp.image = sig    # Show the clean (unnoised) signal
 #disp.image = bg     # Show the background noise
+
 plt.show()
 
