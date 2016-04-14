@@ -57,6 +57,7 @@ image, sig, bg = mock.make_mock_shower_image(geom,
 
 # NORMALIZE PIXELS VALUE ######################################################
 
+image -= image.min()
 image /= image.max()
 
 # PLOT ########################################################################
