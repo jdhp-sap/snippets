@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Make simulated Camera images using the "mock" simulator (random simulation).
+Make simulated camera images using the "mock" simulator (random simulation).
 
 Inspired by ctapipe/examples/camera_animation.py
 
@@ -22,64 +22,47 @@ import numpy as np
 import PIL.Image as pil_img # PIL.Image is a module not a class...
 
 
-def make_an_image(image_name):
+# LOAD THE CAMERA #############################################################
 
-    # LOAD THE CAMERA #########################################
+geom = io.make_rectangular_camera_geometry()
 
-    geom = io.make_rectangular_camera_geometry()
+# GENERATE A (RANDOM) 2D SHOWER MODEL #########################################
 
-    # MAKE THE IMAGE ##########################################
+centroid = np.random.uniform(-0.5, 0.5, size=2)
+width = np.random.uniform(0, 0.01)
+length = np.random.uniform(0, 0.03) + width
+angle = np.random.uniform(0, 360)
+intens = np.random.exponential(2) * 50
 
-    centroid = np.random.uniform(-0.5, 0.5, size=2)
-    width = np.random.uniform(0, 0.01)
-    length = np.random.uniform(0, 0.03) + width
-    angle = np.random.uniform(0, 360)
-    intens = np.random.exponential(2) * 50
+model = mock.generate_2d_shower_model(centroid=centroid,
+                                      width=width,
+                                      length=length,
+                                      psi=angle * u.deg)
 
-    model = mock.generate_2d_shower_model(centroid=centroid,
-                                          width=width,
-                                          length=length,
-                                          psi=angle * u.deg)
+# MAKE THE IMAGE ##############################################################
 
-    image, sig, bg = mock.make_mock_shower_image(geom,
-                                                 model.pdf,
-                                                 intensity=intens,
-                                                 nsb_level_pe=5000)
+# image = c * (sig + bg)
+# - "image" is the noisy image (a 1D Numpy array with one value per pixel).
+# - "sig" is the clean image (a 1D Numpy array with one value per pixel).
+# - "bg" is the background noise (a 1D Numpy array with one value per pixel).
+image, sig, bg = mock.make_mock_shower_image(geom,
+                                             model.pdf,
+                                             intensity=intens,
+                                             nsb_level_pe=5000)
 
-    # NORMALIZE PIXELS VALUE ##################################
+# NORMALIZE PIXELS VALUE ######################################################
 
-    image -= image.min()
-    image /= image.max()
+image -= image.min()
+image /= image.max()
+image *= 255
 
-    image = np.array([pixel * 255 for pixel in image])
+# SAVE THE IMAGE ##############################################################
 
-    # SAVE THE IMAGE ##########################################
+mode = "L"                           # "L" = grayscale mode
+size = int(math.sqrt(image.size))
 
-    mode = "L"       # Grayscale
-    size = int(math.sqrt(image.size))
+pil_image = pil_img.new(mode, (size, size))
+pil_image.putdata(image)
 
-    pil_image = pil_img.new(mode, (size, size))
-    pil_image.putdata(image)
-
-    pil_image.save(image_name)
-
-
-if __name__ == '__main__':
-
-    # PARSE OPTIONS ###########################################################
-    desc = 'Make simulated Camera images using the "mock" simulator ' \
-           '(random simulation).'
-    parser = argparse.ArgumentParser(description=desc)
-
-    parser.add_argument("--number", "-n", type=int, default=1,
-                        metavar="INTEGER",
-                        help="The number of images to make")
-    args = parser.parse_args()
-
-    number_of_images = args.number
-
-    # MAKE IMAGES #############################################################
-
-    for i in range(number_of_images):
-        make_an_image("ctapipe_{}.png".format(i))
+pil_image.save("out.png")
 
