@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Extract simulated camera images from a simtel file.
-
-Inspired by ctapipe/examples/read_hessio_single_tel.py
+List the content of a simtel file.
 """
 
 import argparse

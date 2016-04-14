@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Extract simulated camera images from a simtel file.
-
-Inspired by ctapipe/examples/read_hessio_single_tel.py
+Count the number of events in a simtel file.
 """
 
 import argparse
