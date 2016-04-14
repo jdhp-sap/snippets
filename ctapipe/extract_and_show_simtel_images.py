@@ -19,18 +19,21 @@ from matplotlib import pyplot as plt
 
 def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
 
-    max_events = 5
-
     # GET EVENT #############################################################
 
-    # Source is a python generator.
-    # It contains ctapipe.core.Container instances ("event").
-    #
-    # Source contains few events (usually 0, 1 or 2)
-    source = hessio_event_source(simtel_file_path, allowed_tels=[tel_num], max_events=max_events)
+    # hessio_event_source returns a Python generator that streams data from an
+    # EventIO/HESSIO MC data file (e.g. a standard CTA data file).
+    # This generator contains ctapipe.core.Container instances ("event").
+    # 
+    # Parameters:
+    # - max_events: maximum number of events to read
+    # - allowed_tels: select only a subset of telescope, if None, all are read.
+    source = hessio_event_source(simtel_file_path,
+                                 allowed_tels=[tel_num],
+                                 max_events=event_index+1)
 
-    event_list = list(source)
-    event = event_list[event_index]
+    event_list = list(source)          # TODO
+    event = event_list[event_index]    # TODO
 
     # INIT PLOT #############################################################
 
@@ -47,13 +50,13 @@ def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
     #data = event.dl0.tel[tel_num].adc_samples[channel]
     #for ii in range(data.shape[1]):
     #    disp.image = data[:, ii]
-    #    disp.set_limits_percent(70)
+    #    disp.set_limits_percent(70)   # TODO
     #    plt.savefig('CT{:03d}_EV{:010d}_S{:02d}.png'.format(tel_num, event.dl0.event_id, ii))
 
     # DISPLAY INTEGRATED EVENT ##############################################
 
     disp.image = event.dl0.tel[tel_num].adc_sums[channel]
-    disp.set_limits_percent(70)
+    disp.set_limits_percent(70)        # TODO
     plt.savefig('CT{:03d}_EV{:010d}.png'.format(tel_num, event.dl0.event_id))
 
     # PLOT ##################################################################
