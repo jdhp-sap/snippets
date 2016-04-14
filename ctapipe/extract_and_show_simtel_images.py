@@ -11,7 +11,7 @@ import argparse
 
 import ctapipe
 import ctapipe.visualization
-from ctapipe.utils.datasets import get_example_simtelarray_file
+#from ctapipe.utils.datasets import get_example_simtelarray_file
 from ctapipe.io.hessio import hessio_event_source
 
 from matplotlib import pyplot as plt
