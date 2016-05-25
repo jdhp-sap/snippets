@@ -38,7 +38,8 @@ def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
     # INIT PLOT #############################################################
 
     x, y = event.meta.pixel_pos[tel_num]
-    geom = ctapipe.io.CameraGeometry.guess(x, y)
+    foclen = event.meta.optical_foclen[tel_num]
+    geom = ctapipe.io.CameraGeometry.guess(x, y, foclen)
     disp = ctapipe.visualization.CameraDisplay(geom, title='CT%d' % tel_num)
     disp.enable_pixel_picker()
     #disp.add_colorbar()
