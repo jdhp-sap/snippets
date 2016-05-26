@@ -28,7 +28,7 @@ def recursive_print(var, level=0):
             print("{}- {}   {}".format(pre, var, type(var)))
 
 
-def list_simtel_content(simtel_file_path, tel_num=1, event_index=0):
+def list_simtel_content(simtel_file_path, tel_num, event_id):
 
     # GET EVENT #############################################################
 
@@ -40,18 +40,24 @@ def list_simtel_content(simtel_file_path, tel_num=1, event_index=0):
     # - max_events: maximum number of events to read
     # - allowed_tels: select only a subset of telescope, if None, all are read.
     source = hessio_event_source(simtel_file_path,
-                                 allowed_tels=[tel_num],
-                                 max_events=event_index+1)
+                                 allowed_tels=[tel_num])
 
-    event_list = list(source)          # TODO
-    event = event_list[event_index]    # TODO
+    event = None
+
+    for ev in source:
+        if int(ev["dl0"]["event_id"]) == event_id:
+            event = ev
+            break
 
     # DISPLAY EVENT INFORMATIONS ##############################################
 
-    print("- event:")
-    recursive_print(event, level=1)
-    print("- event.meta:")
-    recursive_print(event.meta, level=1)
+    if event is not None:
+        print("- event:")
+        recursive_print(event, level=1)
+        print("- event.meta:")
+        recursive_print(event.meta, level=1)
+    else:
+        print("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_num))
 
 
 if __name__ == '__main__':
@@ -60,13 +66,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Display events info.")
 
-    parser.add_argument("--telescope", "-t", type=int, default=1,
+    parser.add_argument("--telescope", "-t", type=int,
                         metavar="INTEGER",
-                        help="The telescope number to query")
+                        help="The telescope to query (telescope number)")
 
-    parser.add_argument("--event", "-e", type=int, default=0,
+    parser.add_argument("--event", "-e", type=int,
                         metavar="INTEGER",
-                        help="The event to extract")
+                        help="The event to extract (event ID)")
 
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
@@ -74,10 +80,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     tel_num = args.telescope
-    event_index = args.event
+    event_id = args.event
     simtel_file_path = args.fileargs[0]
 
     # DISPLAY IMAGES ##########################################################
 
-    list_simtel_content(simtel_file_path, tel_num, event_index)
+    list_simtel_content(simtel_file_path, tel_num, event_id)
 
