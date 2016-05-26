@@ -17,7 +17,7 @@ from ctapipe.io.hessio import hessio_event_source
 from matplotlib import pyplot as plt
 
 
-def show_image(simtel_file_path, tel_num, event_id, channel=0):
+def show_photoelectron_image(simtel_file_path, tel_num, event_id, channel=0):
 
     # GET EVENT #############################################################
 
@@ -107,5 +107,5 @@ if __name__ == '__main__':
 
     # DISPLAY IMAGES ##########################################################
 
-    show_image(simtel_file_path, tel_num, event_id, channel)
+    show_photoelectron_image(simtel_file_path, tel_num, event_id, channel)
 
