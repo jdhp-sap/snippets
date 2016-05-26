@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     # PARSE OPTIONS ###########################################################
 
-    desc = "Display simulated camera images from a simtel file."
+    desc = "Export simulated camera images to JSON."
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument("--telescope", "-t", type=int,
