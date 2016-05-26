@@ -56,24 +56,18 @@ def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
 
     # DISPLAY INTEGRATED EVENT ##############################################
 
+    #print(event.dl0.tel[tel_num].adc_sums[channel].dtype)
+    #print(event.mc.tel[tel_num].photo_electrons.dtype)
+
+    # The original image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array (dtype=int32)
+    # The photoelectron image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array with the same shape (dtype=int32)
+
+    ## Display the original image
     #disp.image = event.dl0.tel[tel_num].adc_sums[channel]
 
-    #print(event.dl0.tel[tel_num].adc_sums[channel])
-    #print(type(event.dl0.tel[tel_num].adc_sums[channel]))
-    #print(event.dl0.tel[tel_num].adc_sums[channel].shape)
-
-    #print(event.mc.tel[tel_num].photo_electrons)
-    #print(type(event.mc.tel[tel_num].photo_electrons))
-    #print(event.mc.tel[tel_num].photo_electrons.shape)
-
-    # The original image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array
-    # The photoelectron image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array with the same shape
-
-    # Taken from https://github.com/tino-michael/tino_cta/blob/e6cc6db3e64135c9ac92bce2dae6e6f81a36096a/sandbox/show_ADC_and_PE_per_event.py
-    for jj in range(len(event.mc.tel[tel_num].photo_electrons)):
-        event.dl0.tel[tel_num].adc_sums[channel][jj] = event.mc.tel[tel_num].photo_electrons[jj]
-
-    disp.image = event.dl0.tel[tel_num].adc_sums[channel].astype(float)
+    # Display the photoelectron original image
+    # Inspired by https://github.com/tino-michael/tino_cta/blob/e6cc6db3e64135c9ac92bce2dae6e6f81a36096a/sandbox/show_ADC_and_PE_per_event.py
+    disp.image = event.mc.tel[tel_num].photo_electrons
 
     #disp.set_limits_minmax(0, 9000)
     disp.set_limits_percent(70)        # TODO
