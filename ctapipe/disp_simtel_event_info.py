@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-List the content of a simtel file.
+Show the content of a simtel event.
 """
 
 import argparse
