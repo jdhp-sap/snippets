@@ -37,8 +37,7 @@ def count_simtel_events(simtel_file_path):
                 num_event_dict[telescope_id] = 0
             num_event_dict[telescope_id] += 1
 
-    print("Number of events per telescope:", num_event_dict)
-    print("Total number of events:", total_num_events)
+    return num_event_dict, total_num_events
 
 
 if __name__ == '__main__':
@@ -55,5 +54,12 @@ if __name__ == '__main__':
 
     # DISPLAY IMAGES ##########################################################
 
-    count_simtel_events(simtel_file_path)
+    num_event_dict, total_num_events = count_simtel_events(simtel_file_path)
+
+    print("Number of events per telescope:")
+    for telescope_id, num_events in num_event_dict.items():
+        print("- Telescope {:03}: {} event{}".format(telescope_id, num_events, "s" if num_events > 1 else ""))
+
+    print()
+    print("Total number of events:", total_num_events)
 
