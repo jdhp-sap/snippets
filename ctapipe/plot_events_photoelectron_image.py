@@ -63,7 +63,7 @@ def show_photoelectron_image(simtel_file_path, tel_num, event_id, channel=0):
 
     # DISPLAY INTEGRATED EVENT ##############################################
 
-    # The photoelectron image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array with the same shape (dtype=int32)
+    # The photoelectron image "event.mc.tel[tel_num].photo_electrons" is a 1D numpy array with the same shape (dtype=int32)
     # Inspired by https://github.com/tino-michael/tino_cta/blob/e6cc6db3e64135c9ac92bce2dae6e6f81a36096a/sandbox/show_ADC_and_PE_per_event.py
     disp.image = event.mc.tel[tel_num].photo_electrons
 
