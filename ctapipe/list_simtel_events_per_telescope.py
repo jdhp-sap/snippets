@@ -29,10 +29,11 @@ def list_simtel_events_per_telescope(simtel_file_path):
     events_per_tel_dict = {}   # List of events per telescope
 
     for event in source:
-        for telescope_id in event["trig"]["tels_with_trigger"]:
+        triggered_telescopes_list = [int(tel_id) for tel_id in event["trig"]["tels_with_trigger"]]
+        for telescope_id in triggered_telescopes_list:
             if telescope_id not in events_per_tel_dict:
                 events_per_tel_dict[telescope_id] = []
-            events_per_tel_dict[telescope_id].append(event["dl0"]["event_id"])
+            events_per_tel_dict[telescope_id].append(int(event["dl0"]["event_id"]))
 
     return events_per_tel_dict
 
@@ -55,10 +56,5 @@ if __name__ == '__main__':
 
     print("Events per telescope:")
     for telescope_id, events_id_list in events_per_tel_dict.items():
-        #num_events = len(events_id_list)
-        #print("- Telescope {:03}: {:03} event{} {}".format(telescope_id,
-        #                                                   num_events,
-        #                                                   "s" if num_events > 1 else " ",
-        #                                                   events_id_list))
         print("- Telescope {:03}: {}".format(telescope_id, events_id_list))
 
