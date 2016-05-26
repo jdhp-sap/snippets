@@ -8,16 +8,16 @@ Inspired by ctapipe/examples/read_hessio_single_tel.py
 """
 
 import argparse
+import sys
 
 import ctapipe
 import ctapipe.visualization
-#from ctapipe.utils.datasets import get_example_simtelarray_file
 from ctapipe.io.hessio import hessio_event_source
 
 from matplotlib import pyplot as plt
 
 
-def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
+def show_image(simtel_file_path, tel_num, event_id, channel=0):
 
     # GET EVENT #############################################################
 
@@ -28,23 +28,30 @@ def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
     # Parameters:
     # - max_events: maximum number of events to read
     # - allowed_tels: select only a subset of telescope, if None, all are read.
-    source = hessio_event_source(simtel_file_path,
-                                 allowed_tels=[tel_num],
-                                 max_events=event_index+1)
+    source = hessio_event_source(simtel_file_path, allowed_tels=[tel_num])
 
-    event_list = list(source)          # TODO
-    event = event_list[event_index]    # TODO
+    event = None
+
+    for ev in source:
+        if int(ev.dl0.event_id) == event_id:
+            event = ev
+            break
+
+    if event is None:
+        print("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_num))
+        sys.exit(1)
 
     # INIT PLOT #############################################################
 
     x, y = event.meta.pixel_pos[tel_num]
     foclen = event.meta.optical_foclen[tel_num]
     geom = ctapipe.io.CameraGeometry.guess(x, y, foclen)
+
     disp = ctapipe.visualization.CameraDisplay(geom, title='CT%d' % tel_num)
     disp.enable_pixel_picker()
-    #disp.add_colorbar()
+    disp.add_colorbar()
 
-    disp.axes.set_title('CT{:03d}, event {:010d}'.format(tel_num, event.dl0.event_id))
+    disp.axes.set_title('CT{:03d}, event {:05d}'.format(tel_num, event_id))
 
     # DISPLAY TIME-VARYING EVENT ############################################
 
@@ -52,26 +59,17 @@ def show_image(simtel_file_path, tel_num=1, channel=0, event_index=0):
     #for ii in range(data.shape[1]):
     #    disp.image = data[:, ii]
     #    disp.set_limits_percent(70)   # TODO
-    #    plt.savefig('CT{:03d}_EV{:010d}_S{:02d}.png'.format(tel_num, event.dl0.event_id, ii))
+    #    plt.savefig('CT{:03d}_EV{:05d}_S{:02d}.png'.format(tel_num, event_id, ii))
 
     # DISPLAY INTEGRATED EVENT ##############################################
 
-    #print(event.dl0.tel[tel_num].adc_sums[channel].dtype)
-    #print(event.mc.tel[tel_num].photo_electrons.dtype)
-
-    # The original image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array (dtype=int32)
     # The photoelectron image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array with the same shape (dtype=int32)
-
-    ## Display the original image
-    #disp.image = event.dl0.tel[tel_num].adc_sums[channel]
-
-    # Display the photoelectron original image
     # Inspired by https://github.com/tino-michael/tino_cta/blob/e6cc6db3e64135c9ac92bce2dae6e6f81a36096a/sandbox/show_ADC_and_PE_per_event.py
     disp.image = event.mc.tel[tel_num].photo_electrons
 
     #disp.set_limits_minmax(0, 9000)
     disp.set_limits_percent(70)        # TODO
-    plt.savefig('CT{:03d}_EV{:010d}.png'.format(tel_num, event.dl0.event_id))
+    plt.savefig('CT{:03d}_EV{:05d}.png'.format(tel_num, event_id))
 
     # PLOT ##################################################################
 
@@ -85,17 +83,17 @@ if __name__ == '__main__':
     desc = "Display simulated camera images from a simtel file."
     parser = argparse.ArgumentParser(description=desc)
 
-    parser.add_argument("--telescope", "-t", type=int, default=1,
+    parser.add_argument("--telescope", "-t", type=int,
                         metavar="INTEGER",
-                        help="The telescope number to query")
+                        help="The telescope to query (telescope number)")
 
     parser.add_argument("--channel", "-c", type=int, default=0,
                         metavar="INTEGER",
                         help="The channel number to query")
 
-    parser.add_argument("--event", "-e", type=int, default=0,
+    parser.add_argument("--event", "-e", type=int,
                         metavar="INTEGER",
-                        help="The event to extract")
+                        help="The event to extract (event ID)")
 
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
@@ -104,10 +102,10 @@ if __name__ == '__main__':
 
     tel_num = args.telescope
     channel = args.channel
-    event_index = args.event
+    event_id = args.event
     simtel_file_path = args.fileargs[0]
 
     # DISPLAY IMAGES ##########################################################
 
-    show_image(simtel_file_path, tel_num, channel, event_index)
+    show_image(simtel_file_path, tel_num, event_id, channel)
 
