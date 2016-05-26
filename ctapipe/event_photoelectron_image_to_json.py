@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     # PARSE OPTIONS ###########################################################
 
-    desc = "Export simulated camera images to JSON."
+    desc = "Export simulated camera images (photoelectrons) to a JSON file."
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument("--telescope", "-t", type=int,
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     event_id = args.event
     simtel_file_path = args.fileargs[0]
 
-    # DISPLAY IMAGES ##########################################################
+    # EXPORT THE IMAGE TO A JSON FILE #########################################
 
     image_array = get_photoelectron_image_array(simtel_file_path, tel_num, event_id, channel)
     image = image_array.tolist()
