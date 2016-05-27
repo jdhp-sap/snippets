@@ -92,7 +92,7 @@ if __name__ == '__main__':
     image_array = get_image_array(simtel_file_path, tel_num, event_id, channel)
     image = image_array.tolist()
 
-    file_name = "CT{:03d}_EV{:05d}_CH{:03d}.json".format(tel_num, event_id, channel)
+    file_name = "TEL{:03d}_EV{:05d}_CH{:03d}.json".format(tel_num, event_id, channel)
 
     with open(file_name, "w") as fd:
         json.dump(image, fd)                           # no pretty print
