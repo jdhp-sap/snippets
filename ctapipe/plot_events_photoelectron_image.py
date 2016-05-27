@@ -17,7 +17,7 @@ from ctapipe.io.hessio import hessio_event_source
 from matplotlib import pyplot as plt
 
 
-def show_photoelectron_image(simtel_file_path, tel_num, event_id, channel=0):
+def show_photoelectron_image(simtel_file_path, tel_num, event_id, channel=0, quiet=False):
 
     # GET EVENT #############################################################
 
@@ -69,11 +69,13 @@ def show_photoelectron_image(simtel_file_path, tel_num, event_id, channel=0):
 
     #disp.set_limits_minmax(0, 9000)
     disp.set_limits_percent(70)        # TODO
-    plt.savefig('CT{:03d}_EV{:05d}.png'.format(tel_num, event_id))
 
     # PLOT ##################################################################
 
-    plt.show()
+    plt.savefig('TEL{:03d}_EV{:05d}_CH{:03d}_pe.png'.format(tel_num, event_id, channel))
+
+    if not quiet:
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -95,6 +97,9 @@ if __name__ == '__main__':
                         metavar="INTEGER",
                         help="The event to extract (event ID)")
 
+    parser.add_argument("--quiet", "-q", action="store_true",
+                        help="Don't show the plot, just save it")
+
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
 
@@ -103,9 +108,10 @@ if __name__ == '__main__':
     tel_num = args.telescope
     channel = args.channel
     event_id = args.event
+    quiet = args.quiet
     simtel_file_path = args.fileargs[0]
 
     # DISPLAY IMAGES ##########################################################
 
-    show_photoelectron_image(simtel_file_path, tel_num, event_id, channel)
+    show_photoelectron_image(simtel_file_path, tel_num, event_id, channel, quiet)
 
