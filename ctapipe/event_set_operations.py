@@ -30,6 +30,7 @@ def event_set_operations(simtel_file_path_list):
                 event_set.add((int(event_id), int(telescope_id)))
 
         if len(event_set) > 0:
+            # Ignore empty simtel files
             event_set_list.append(event_set)
 
     return event_set_list
@@ -46,7 +47,7 @@ if __name__ == '__main__':
                         help="The operation to apply (union, intersection or difference)")
 
     parser.add_argument("fileargs", nargs="+", metavar="FILE",
-                        help="The simtel file to process")
+                        help="The simtel files to process")
 
     args = parser.parse_args()
 
