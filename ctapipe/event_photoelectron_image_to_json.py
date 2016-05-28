@@ -65,7 +65,7 @@ if __name__ == '__main__':
     desc = "Export simulated camera images (photoelectrons) to a JSON file."
     parser = argparse.ArgumentParser(description=desc)
 
-    parser.add_argument("--telescope", "-t", type=int,
+    parser.add_argument("--telescope", "-t", type=int, required=True,
                         metavar="INTEGER",
                         help="The telescope to query (telescope number)")
 
@@ -73,9 +73,13 @@ if __name__ == '__main__':
                         metavar="INTEGER",
                         help="The channel number to query")
 
-    parser.add_argument("--event", "-e", type=int,
+    parser.add_argument("--event", "-e", type=int, required=True,
                         metavar="INTEGER",
                         help="The event to extract (event ID)")
+
+    parser.add_argument("--output", "-o", default=None,
+                        metavar="FILE",
+                        help="The output file path")
 
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
@@ -87,14 +91,17 @@ if __name__ == '__main__':
     event_id = args.event
     simtel_file_path = args.fileargs[0]
 
+    if args.output is None:
+        output_file_path = "TEL{:03d}_EV{:05d}_CH{:03d}_PE.json".format(tel_num, event_id, channel)
+    else:
+        output_file_path = args.output
+
     # EXPORT THE IMAGE TO A JSON FILE #########################################
 
     image_array = get_photoelectron_image_array(simtel_file_path, tel_num, event_id, channel)
     image = image_array.tolist()
 
-    file_name = "TEL{:03d}_EV{:05d}_CH{:03d}_PE.json".format(tel_num, event_id, channel)
-
-    with open(file_name, "w") as fd:
+    with open(output_file_path, "w") as fd:
         json.dump(image, fd)                           # no pretty print
         #json.dump(image, fd, sort_keys=True, indent=4)  # pretty print format
 
