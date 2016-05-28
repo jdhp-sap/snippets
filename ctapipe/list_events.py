@@ -55,5 +55,6 @@ if __name__ == '__main__':
     event_list = list_simtel_events(simtel_file_path)
 
     for event_id, telescopes_id in event_list:
-        print("{:06} {:03}".format(event_id, telescopes_id))
+        print(event_id, telescopes_id)
+        #print("{:06} {:03}".format(event_id, telescopes_id))
 
