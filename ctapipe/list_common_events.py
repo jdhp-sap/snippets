@@ -48,7 +48,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     simtel_file_path_list = args.fileargs
 
-    # DISPLAY IMAGES ##########################################################
+    # MAKE COMMON EVENTS SET ##################################################
 
     event_set_dict = event_set_operations(simtel_file_path_list)
 
