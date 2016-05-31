@@ -76,7 +76,14 @@ if __name__ == '__main__':
     ax1.set_title(r"Standard deviation of pixels (only show pixels with $\sigma > 0$)")
 
     meanpointprops = dict(marker='*', markeredgecolor='black', markerfacecolor='firebrick')
-    ax2.boxplot(nonzero_image_array, meanprops=meanpointprops, meanline=False, showmeans=True)
+    whiskerprops = dict(color='k', linestyle='-')
+    bp = ax2.boxplot(nonzero_image_array,
+                     meanprops=meanpointprops,
+                     whiskerprops=whiskerprops,
+                     #notch=True,
+                     meanline=False,
+                     showmeans=True)
+    #plt.setp(bp['whiskers'], color='k', linestyle='-')
 
     # Save file and plot ########
 
