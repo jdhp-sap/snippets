@@ -14,7 +14,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def plot_telarray_layout(simtel_file_path):
+def plot_telarray_layout(simtel_file_path, show_labels=False):
 
     # GET EVENT ###############################################################
 
@@ -82,6 +82,10 @@ def plot_telarray_layout(simtel_file_path):
                c=tel_array[:,4],  # color
                alpha=0.75)
 
+    if show_labels:
+        for tel_id, pos_x, pos_y, pos_z, tel_foclen in tel_list:
+            ax.text(pos_x + tel_foclen/2., pos_y, str(tel_id), fontsize=9)
+
     #ax.set_title("Telescopes position for " + simtel_file_path)
     ax.set_title("Telescopes position", fontsize=16)
 
@@ -98,14 +102,18 @@ if __name__ == '__main__':
     desc = "Display the telarray layout defined in a given simtel file."
     parser = argparse.ArgumentParser(description=desc)
 
+    parser.add_argument("--labels", "-l", action="store_true",
+                        help="Show telescopes name")
+
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
 
     args = parser.parse_args()
 
+    show_labels = args.labels
     simtel_file_path = args.fileargs[0]
 
     # DISPLAY IMAGES ##########################################################
 
-    plot_telarray_layout(simtel_file_path)
+    plot_telarray_layout(simtel_file_path, show_labels)
 
