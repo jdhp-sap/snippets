@@ -2,23 +2,22 @@
 # -*- coding: utf-8 -*-
 
 """
-Extract simulated camera images from a simtel file.
-
-Inspired by ctapipe/examples/read_hessio_single_tel.py
+Export a simtel camera image to a JSON file.
 """
 
 import argparse
-import sys
-import json
 
 import ctapipe
-import ctapipe.visualization
 from ctapipe.io.hessio import hessio_event_source
 
 from matplotlib import pyplot as plt
 
+import json
 
-def get_image_array(simtel_file_path, tel_num, event_id, channel=0):
+import sys
+
+
+def get_image_array(simtel_file_path, tel_id, event_id):
 
     # GET EVENT ###############################################################
 
@@ -29,7 +28,7 @@ def get_image_array(simtel_file_path, tel_num, event_id, channel=0):
     # Parameters:
     # - max_events: maximum number of events to read
     # - allowed_tels: select only a subset of telescope, if None, all are read.
-    source = hessio_event_source(simtel_file_path, allowed_tels=[tel_num])
+    source = hessio_event_source(simtel_file_path, allowed_tels=[tel_id])
 
     event = None
 
@@ -39,39 +38,62 @@ def get_image_array(simtel_file_path, tel_num, event_id, channel=0):
             break
 
     if event is None:
-        print("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_num))
+        print("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_id))
         sys.exit(1)
 
-    # INIT PLOT ###############################################################
+    # GET IMAGE ###############################################################
 
-    # GET TIME-VARYING EVENT ##################################################
+    # GET TIME-VARYING EVENT
 
-    #data = event.dl0.tel[tel_num].adc_samples[channel]
+    #data = event.dl0.tel[tel_id].adc_samples[channel]
     #for ii in range(data.shape[1]):
     #    image = data[:, ii]
 
-    # GET INTEGRATED EVENT ####################################################
+    # GET INTEGRATED EVENT
 
-    # The image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array (dtype=int32)
-    image = event.dl0.tel[tel_num].adc_sums[channel]
+    channel = 0       # TODO: save all channels
+    image = event.dl0.tel[tel_id].adc_sums[channel]
 
-    return image
+    # GET PHOTOELECTRON IMAGE #################################################
+
+    pe_image = event.mc.tel[tel_id].photo_electrons
+
+    # GET CAMERA GEOMETRY #####################################################
+    
+    x, y = event.meta.pixel_pos[tel_id]
+    foclen = event.meta.optical_foclen[tel_id]
+
+    geom = ctapipe.io.CameraGeometry.guess(x, y, foclen)
+
+    # MAKE THE IMAGE DICT #####################################################
+
+    image_dict = {
+            "event_id": event_id,
+            "tel_id": tel_id,
+            "image": image.tolist(),
+            "photoelectron_image": pe_image.tolist(),
+            "camera_id": geom.cam_id,
+            "pixel_type": geom.pix_type,
+            "foclen": float(foclen.value),
+            "telescope_position": [float(v) for v in event.meta.tel_pos],
+            "pixel_pos_x": [float(v.value) for v in x],
+            "pixel_pos_y": [float(v.value) for v in y],
+            "simtel_file": event.meta.hessio__input
+            }
+
+    return image_dict
 
 
 if __name__ == '__main__':
 
     # PARSE OPTIONS ###########################################################
 
-    desc = "Export simulated camera images to a JSON file."
+    desc = "Export a simtel camera image to a JSON file."
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument("--telescope", "-t", type=int, required=True,
                         metavar="INTEGER",
                         help="The telescope to query (telescope number)")
-
-    parser.add_argument("--channel", "-c", type=int, default=0,
-                        metavar="INTEGER",
-                        help="The channel number to query")
 
     parser.add_argument("--event", "-e", type=int, required=True,
                         metavar="INTEGER",
@@ -86,22 +108,20 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    tel_num = args.telescope
-    channel = args.channel
+    tel_id = args.telescope
     event_id = args.event
     simtel_file_path = args.fileargs[0]
 
     if args.output is None:
-        output_file_path = "TEL{:03d}_EV{:05d}_CH{:03d}.json".format(tel_num, event_id, channel)
+        output_file_path = "TEL{:03d}_EV{:05d}.json".format(tel_id, event_id)
     else:
         output_file_path = args.output
 
-    # EXPORT THE IMAGE TO A JSON FILE #########################################
+    # EXPORT THE IMAGE AND METAS TO A JSON FILE ###############################
 
-    image_array = get_image_array(simtel_file_path, tel_num, event_id, channel)
-    image = image_array.tolist()
+    image_dict = get_image_array(simtel_file_path, tel_id, event_id)
 
     with open(output_file_path, "w") as fd:
-        json.dump(image, fd)                           # no pretty print
-        #json.dump(image, fd, sort_keys=True, indent=4)  # pretty print format
+        #json.dump(image_dict, fd)                           # no pretty print
+        json.dump(image_dict, fd, sort_keys=True, indent=4)  # pretty print format
 
