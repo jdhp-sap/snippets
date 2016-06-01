@@ -15,8 +15,6 @@ import numpy as np
 
 def list_telescopes_geometry(simtel_file_path):
 
-    # GET EVENT ###############################################################
-
     source = hessio_event_source(simtel_file_path)
 
     tel_id_set = set()
