@@ -5,27 +5,30 @@
 Make statistics on simtel images (stored in JSON files).
 """
 
-import ctapipe
-import ctapipe.visualization
-from ctapipe.io.hessio import hessio_event_source
-
 import argparse
+import astropy
+
+import ctapipe
+import ctapipe.io
+import ctapipe.visualization
+
 import json
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 def fetch_images(json_file_path_list):
 
-    image_list = []
+    image_dict_list = []
 
     # For each json file...
     for json_file_path in json_file_path_list:
         print(json_file_path)
         with open(json_file_path, "r") as fd:
-            image = json.load(fd)
-            image_list.append(image)
+            image_dict = json.load(fd)
+            image_dict_list.append(image_dict)
 
-    return image_list
+    return image_dict_list
 
 
 if __name__ == '__main__':
@@ -34,15 +37,27 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Make statistics on simtel images (stored in JSON files).")
 
+    parser.add_argument("--photoelectron", "-p", action="store_true",
+                        help="Plot the photoelectron image")
+
     parser.add_argument("fileargs", nargs="+", metavar="FILE",
                         help="The JSON files to process")
 
     args = parser.parse_args()
+    process_photoelectron = args.photoelectron
     json_file_path_list = args.fileargs
 
     # FETCH IMAGES ############################################################
 
-    image_list = fetch_images(json_file_path_list)
+    image_dict_list = fetch_images(json_file_path_list)
+
+    image_list = []
+    for image_dict in image_dict_list:
+        if process_photoelectron:
+            image_list.append(image_dict["photoelectron_image"])
+        else:
+            image_list.append(image_dict["image"])
+
     image_array = np.array(image_list)
 
     # MAKE STATISTICS #########################################################
