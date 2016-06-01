@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Display simulated camera images from a JSON file.
+Display statistics about camera images.
 """
 
 import argparse
@@ -16,8 +16,6 @@ import json
 
 from matplotlib import pyplot as plt
 import numpy as np
-
-import os
 
 
 def plot_json_image(json_file_path, output_file_path=None, plot_photoelectron=False, quiet=False, plot_title=None):
