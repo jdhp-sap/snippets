@@ -10,7 +10,6 @@ import argparse
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
 
-import numpy as np
 from matplotlib import pyplot as plt
 
 import json
