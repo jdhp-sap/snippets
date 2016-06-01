@@ -53,14 +53,6 @@ def show_photoelectron_image(simtel_file_path, output_file_path, tel_num, event_
 
     disp.axes.set_title('CT{:03d}, event {:05d}'.format(tel_num, event_id))
 
-    # DISPLAY TIME-VARYING EVENT ############################################
-
-    #data = event.dl0.tel[tel_num].adc_samples[channel]
-    #for ii in range(data.shape[1]):
-    #    disp.image = data[:, ii]
-    #    disp.set_limits_percent(70)   # TODO
-    #    plt.savefig('CT{:03d}_EV{:05d}_S{:02d}.png'.format(tel_num, event_id, ii))
-
     # DISPLAY INTEGRATED EVENT ##############################################
 
     # The photoelectron image "event.mc.tel[tel_num].photo_electrons" is a 1D numpy array with the same shape (dtype=int32)
