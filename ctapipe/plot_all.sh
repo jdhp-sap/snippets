@@ -19,7 +19,6 @@ do
         ./plot_events_photoelectron_image.py -q -o "${OUTPUT_FILE_NAME}_PE.pdf" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
         ./plot_events_image_histogram.py -q -o "${OUTPUT_FILE_NAME}_HIST.pdf" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
         ./plot_events_photoelectron_image_histogram.py -q -o "${OUTPUT_FILE_NAME}_PE_HIST.pdf" -t $TELID -e "$EVENTID ${SIMTEL_FILE}" 2> /dev/null
-        ./event_photoelectron_image_to_json.py -o "${OUTPUT_FILE_NAME}_PE.json" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
         ./event_image_to_json.py -o "${OUTPUT_FILE_NAME}.json" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
     done
 
