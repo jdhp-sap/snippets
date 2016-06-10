@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-Display the telarray layout defined in a given simtel file.
+Display triggered telescopes ID and geometry from a given simtel file
 """
 
 import argparse
 
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
-
-import numpy as np
 
 
 def list_telescopes_geometry(simtel_file_path):
@@ -27,14 +25,14 @@ def list_telescopes_geometry(simtel_file_path):
         x, y = event.meta.pixel_pos[tel_id]
         foclen = event.meta.optical_foclen[tel_id]
         geom = ctapipe.io.CameraGeometry.guess(x, y, foclen)
-        print("{:03d}: {} ({})".format(tel_id, geom.cam_id, geom.pix_type))
+        print("Telescope {:03d}: {} ({} pixels)".format(tel_id, geom.cam_id, geom.pix_type))
 
 
 if __name__ == '__main__':
 
     # PARSE OPTIONS ###########################################################
 
-    desc = "Display the telarray layout defined in a given simtel file."
+    desc = "Display triggered telescopes ID and geometry from a given simtel file."
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
@@ -44,7 +42,7 @@ if __name__ == '__main__':
 
     simtel_file_path = args.fileargs[0]
 
-    # DISPLAY IMAGES ##########################################################
+    # PRINT THE LIST ##########################################################
 
     list_telescopes_geometry(simtel_file_path)
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-List events for each telescope in a simtel file.
+List triggered telescopes for each event in a simtel file.
 """
 
 import argparse
@@ -13,18 +13,7 @@ from ctapipe.io.hessio import hessio_event_source
 
 def list_simtel_triggered_telescopes_per_event(simtel_file_path):
 
-    # GET EVENT #############################################################
-
-    # hessio_event_source returns a Python generator that streams data from an
-    # EventIO/HESSIO MC data file (e.g. a standard CTA data file).
-    # This generator contains ctapipe.core.Container instances ("event").
-    #
-    # Parameters:
-    # - max_events: maximum number of events to read
-    # - allowed_tels: select only a subset of telescope, if None, all are read.
-    source = hessio_event_source(simtel_file_path,
-                                 allowed_tels=None,
-                                 max_events=None)
+    source = hessio_event_source(simtel_file_path, allowed_tels=None, max_events=None)
 
     tels_per_event_dict = {}   # List of events per telescope
 
@@ -38,7 +27,8 @@ if __name__ == '__main__':
 
     # PARSE OPTIONS ###########################################################
 
-    parser = argparse.ArgumentParser(description="List simtel content.")
+    desc = "List triggered telescopes for each event in a simtel file"
+    parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument("fileargs", nargs=1, metavar="FILE",
                         help="The simtel file to process")
@@ -46,7 +36,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     simtel_file_path = args.fileargs[0]
 
-    # DISPLAY IMAGES ##########################################################
+    # PRINT THE LIST ##########################################################
 
     tels_per_event_dict = list_simtel_triggered_telescopes_per_event(simtel_file_path)
 
