@@ -25,6 +25,7 @@ Example of output:
 """
 
 import argparse
+import json
 
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
@@ -46,13 +47,18 @@ def list_telescopes_geometry(simtel_file_path):
 
     for event in source:
         for tel_id in event.dl0.tels_with_data:
-            tel_id_set.add(tel_id)
+            tel_id_set.add(int(tel_id))
+
+    tel_geometry_dict = {}
 
     for tel_id in tel_id_set:
         x, y = event.meta.pixel_pos[tel_id]
         foclen = event.meta.optical_foclen[tel_id]
         geom = ctapipe.io.CameraGeometry.guess(x, y, foclen)
+        tel_geometry_dict[tel_id] = [geom.cam_id, geom.pix_type]
         print("Telescope {:03d}: {} ({} pixels)".format(tel_id, geom.cam_id, geom.pix_type))
+
+    return tel_geometry_dict
 
 
 def main():
@@ -72,8 +78,18 @@ def main():
 
     # PRINT THE LIST ##########################################################
 
-    list_telescopes_geometry(simtel_file_path)
+    tel_geometry_dict = list_telescopes_geometry(simtel_file_path)
 
+    #for tel_id, (cam_id, pix_type) in tel_geometry_dict.items():
+    #    print("Telescope {:03d}: {} ({} pixels)".format(tel_id, cam_id, pix_type))
+
+    # EXPORT CAMERAS GEOMETRY #############################
+
+    output_file_path = simtel_file_path + ".cameras_geometry.json"
+
+    with open(output_file_path, "w") as fd:
+        #json.dump(camera_dict, fd)                                 # no pretty print
+        json.dump(tel_geometry_dict, fd, sort_keys=True, indent=4)  # pretty print format
 
 if __name__ == '__main__':
     main()
