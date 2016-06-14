@@ -51,7 +51,7 @@ def show_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0,
     disp.enable_pixel_picker()
     disp.add_colorbar()
 
-    disp.axes.set_title('CT{:03d}, event {:05d}'.format(tel_num, event_id))
+    disp.axes.set_title('Telescope {:03d}, Event {:05d}'.format(tel_num, event_id))
 
     # DISPLAY TIME-VARYING EVENT ############################################
 
