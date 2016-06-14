@@ -57,7 +57,7 @@ def plot_telarray_layout(simtel_file_path, show_labels=False):
         tel_list.append([tel_id, *tel_pos, tel_foclen])
 
     tel_array = np.array(tel_list)
-    #print(tel_array)
+    #print(len(tel_array))
 
     # PLOT ####################################################################
 
@@ -81,6 +81,19 @@ def plot_telarray_layout(simtel_file_path, show_labels=False):
                s=tel_array[:,4],  # radius
                c=tel_array[:,4],  # color
                alpha=0.75)
+
+    ## Highlight some telescopes
+    #ax.scatter(tel_array[:,1],    # x
+    #           tel_array[:,2],    # y
+    #           s=tel_array[:,4],  # radius
+    #           c="gray",  # color
+    #           alpha=0.25)
+
+    #for n in range(102-1, 125):
+    #    ax.scatter(tel_array[n,1],    # x
+    #               tel_array[n,2],    # y
+    #               s=32,  # radius
+    #               c="red")  # color
 
     if show_labels:
         for tel_id, pos_x, pos_y, pos_z, tel_foclen in tel_list:
