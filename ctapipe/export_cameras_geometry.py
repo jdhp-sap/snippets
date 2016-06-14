@@ -20,7 +20,7 @@ def export_cameras_geometry(simtel_file_path, tel_id):
 
     for event in source:
         #######################################################################
-        # WARNING:                                                            #
+        # CAUTION:                                                            #
         # event.meta.optical_foclen and event.meta.tel_pos are only filled    #
         # when source is traversed !                                          #
         # The current value of these two variables is not the actual value    #
