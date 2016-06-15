@@ -8,7 +8,6 @@ Inspired by ctapipe/examples/read_hessio_single_tel.py
 """
 
 import argparse
-import sys
 
 import ctapipe
 import ctapipe.visualization
@@ -38,8 +37,7 @@ def show_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0,
             break
 
     if event is None:
-        print("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_num))
-        sys.exit(1)
+        raise Exception("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_num))
 
     # INIT PLOT #############################################################
 
