@@ -70,8 +70,7 @@ def extract_image(simtel_file_path, tel_num, event_id, channel=0):
 
     # GET AND CROP THE IMAGE ################################################
 
-    # The image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array (dtype=int32)
-    image = event.dl0.tel[tel_num].adc_sums[channel]
+    image = event.dl0.tel[tel_num].adc_sums[channel]         # 1D numpy array
 
     if geom.cam_id == "ASTRI":
         cropped_img = crop_astri_image(image)
@@ -80,7 +79,18 @@ def extract_image(simtel_file_path, tel_num, event_id, channel=0):
     else:
         raise ValueError("The input image is not a valide ASTRI or SCTCam telescope image.")
 
-    return cropped_img
+    # GET AND CROP THE PHOTOELECTRON IMAGE ##################################
+
+    pe_image = event.mc.tel[tel_num].photo_electrons       # 1D numpy array
+
+    if geom.cam_id == "ASTRI":
+        cropped_pe_img = crop_astri_image(pe_image)
+    elif geom.cam_id == "SCTCam":
+        cropped_pe_img = crop_sctcam_image(pe_image)
+    else:
+        raise ValueError("The input image is not a valide ASTRI or SCTCam telescope image.")
+
+    return (cropped_img, cropped_pe_img)
 
 
 def crop_sctcam_image(input_img):
@@ -159,7 +169,7 @@ def crop_astri_image(input_img):
     return cropped_img
 
 
-def save_fits(img, output_file_path):
+def save_fits(img, pe_img, output_file_path):
     """
     img is the image and it should be a 2D or a 3D numpy array with values.
     """
@@ -167,12 +177,16 @@ def save_fits(img, output_file_path):
     if img.ndim not in (2, 3):
         raise Exception("The input image should be a 2D or a 3D numpy array.")
 
-    hdu = fits.PrimaryHDU(img)
+    # http://docs.astropy.org/en/stable/io/fits/appendix/faq.html#how-do-i-create-a-multi-extension-fits-file-from-scratch
+    hdu0 = fits.PrimaryHDU(img)
+    hdu1 = fits.ImageHDU(pe_img)
+
+    hdu_list = fits.HDUList([hdu0, hdu1])
 
     if os.path.isfile(output_file_path):
         os.remove(output_file_path)
 
-    hdu.writeto(output_file_path)
+    hdu_list.writeto(output_file_path)
 
 
 def main():
@@ -215,11 +229,11 @@ def main():
 
     # EXTRACT AND CROP THE IMAGE ##############################################
 
-    cropped_img = extract_image(simtel_file_path, tel_num, event_id, channel)
+    (cropped_img, cropped_pe_img) = extract_image(simtel_file_path, tel_num, event_id, channel)
 
     # SAVE THE IMAGE ##########################################################
 
-    save_fits(cropped_img, output_file_path)
+    save_fits(cropped_img, cropped_pe_img, output_file_path)
 
 
 if __name__ == "__main__":
