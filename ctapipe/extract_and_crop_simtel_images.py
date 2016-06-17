@@ -36,7 +36,7 @@ import os
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
 
-def extract_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0):
+def extract_image(simtel_file_path, tel_num, event_id, channel=0):
 
     # GET EVENT #############################################################
 
@@ -68,7 +68,7 @@ def extract_image(simtel_file_path, output_file_path, tel_num, event_id, channel
     if geom.pix_type != "rectangular":
         raise ValueError("The input image is not a valide ASTRI or SCTCam telescope image.")
 
-    # DISPLAY INTEGRATED EVENT ##############################################
+    # GET AND CROP THE IMAGE ################################################
 
     # The image "event.dl0.tel[tel_num].adc_sums[channel]" is a 1D numpy array (dtype=int32)
     image = event.dl0.tel[tel_num].adc_sums[channel]
@@ -215,7 +215,7 @@ def main():
 
     # EXTRACT AND CROP THE IMAGE ##############################################
 
-    cropped_img = extract_image(simtel_file_path, output_file_path, tel_num, event_id, channel)
+    cropped_img = extract_image(simtel_file_path, tel_num, event_id, channel)
 
     # SAVE THE IMAGE ##########################################################
 
