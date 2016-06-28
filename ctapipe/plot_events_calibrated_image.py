@@ -12,6 +12,7 @@ import argparse
 import ctapipe
 import ctapipe.visualization
 from ctapipe.io.hessio import hessio_event_source
+import pyhessio
 
 from matplotlib import pyplot as plt
 
