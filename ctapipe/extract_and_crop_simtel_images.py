@@ -35,6 +35,38 @@ import os
 
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
+import pyhessio
+
+def get_mc_calibration_coeffs(tel_id):
+    """
+    Get the calibration coefficients from the MC data file to the
+    data. This is ahack (until we have a real data structure for the
+    calibrated data), it should move into `ctapipe.io.hessio_event_source`.
+
+    RETURNS
+    -------
+    (pedestal, gains) : arrays of the pedestal and pe/dc ratios.
+    """
+    pedestal = pyhessio.get_pedestal(tel_id)[0]
+    gains = pyhessio.get_calibration(tel_id)[0]
+
+    return pedestal, gains
+
+
+def apply_mc_calibration(adcs, tel_id):
+    """
+    Apply basic calibration
+    """
+    peds, gains = get_mc_calibration_coeffs(tel_id)
+
+    if adcs.ndim > 1:  # if it's per-sample need to correct the peds
+        # TODO ???
+        calibrated_image = ((adcs - peds[:, np.newaxis] / adcs.shape[1]) * gains[:, np.newaxis])
+    else:
+        calibrated_image = (adcs - peds) * gains
+
+    return calibrated_image
+
 
 def extract_image(simtel_file_path, tel_num, event_id, channel=0):
 
@@ -70,12 +102,13 @@ def extract_image(simtel_file_path, tel_num, event_id, channel=0):
 
     # GET AND CROP THE IMAGE ################################################
 
-    image = event.dl0.tel[tel_num].adc_sums[channel]         # 1D numpy array
+    uncalibrated_image = event.dl0.tel[tel_num].adc_sums[channel]         # 1D numpy array
+    calibrated_image = apply_mc_calibration(uncalibrated_image, tel_num)
 
     if geom.cam_id == "ASTRI":
-        cropped_img = crop_astri_image(image)
+        cropped_img = crop_astri_image(calibrated_image)
     elif geom.cam_id == "SCTCam":
-        cropped_img = crop_sctcam_image(image)
+        cropped_img = crop_sctcam_image(calibrated_image)
     else:
         raise ValueError("The input image is not a valide ASTRI or SCTCam telescope image.")
 
