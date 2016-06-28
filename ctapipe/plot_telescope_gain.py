@@ -32,7 +32,7 @@ def get_mc_calibration_coeffs(tel_id):
     return pedestal, gains
 
 
-def show_pedestal_image(simtel_file_path, output_file_path, tel_num, quiet=False):
+def show_gains_image(simtel_file_path, output_file_path, tel_num, quiet=False):
 
     # GET EVENT #############################################################
 
@@ -111,5 +111,5 @@ if __name__ == '__main__':
 
     # DISPLAY IMAGES ##########################################################
 
-    show_pedestal_image(simtel_file_path, output_file_path, tel_num, quiet)
+    show_gains_image(simtel_file_path, output_file_path, tel_num, quiet)
 
