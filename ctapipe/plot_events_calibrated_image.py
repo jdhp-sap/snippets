@@ -39,9 +39,12 @@ def apply_mc_calibration(adcs, tel_id):
     peds, gains = get_mc_calibration_coeffs(tel_id)
 
     if adcs.ndim > 1:  # if it's per-sample need to correct the peds
-        return ((adcs - peds[:, np.newaxis] / adcs.shape[1]) * gains[:, np.newaxis])
+        # TODO ???
+        calibrated_image = ((adcs - peds[:, np.newaxis] / adcs.shape[1]) * gains[:, np.newaxis])
+    else:
+        calibrated_image = (adcs - peds) * gains
 
-    return (adcs - peds) * gains
+    return calibrated_image
 
 
 def show_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0, quiet=False):
