@@ -104,7 +104,7 @@ if __name__ == '__main__':
     simtel_file_path = args.fileargs[0]
 
     if args.output is None:
-        output_file_path = "TEL{:03d}_PEDESTAL.pdf".format(tel_num)
+        output_file_path = "TEL{:03d}_GAIN.pdf".format(tel_num)
     else:
         output_file_path = args.output
 
