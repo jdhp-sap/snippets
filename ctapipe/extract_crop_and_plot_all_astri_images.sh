@@ -19,6 +19,7 @@ do
             #echo "TELID=${TELID} EVENTID=${EVENTID}"
             ./extract_and_crop_simtel_images.py -o "${OUTPUT_FILE_NAME}.fits" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
             ./plot_events_image.py -q -o "${OUTPUT_FILE_NAME}.pdf" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
+            ./plot_events_calibrated_image.py -q -o "${OUTPUT_FILE_NAME}.pdf" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
             ./plot_events_photoelectron_image.py -q -o "${OUTPUT_FILE_NAME}_PE.pdf" -t $TELID -e $EVENTID "${SIMTEL_FILE}" 2> /dev/null
         fi
     done
