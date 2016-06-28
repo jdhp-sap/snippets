@@ -63,7 +63,17 @@ def show_pedestal_image(simtel_file_path, output_file_path, tel_num, quiet=False
 
     # DISPLAY INTEGRATED EVENT ##############################################
 
-    disp.image = get_mc_calibration_coeffs(tel_num)[0]
+    pedestal, gains = get_mc_calibration_coeffs(tel_num)
+    disp.image = pedestal
+
+    #print("pedestal:", pedestal.ndim)
+    #print("gains:", gains.ndim)
+    #print("pedestal:", pedestal.dtype)
+    #print("gains:", gains.dtype)
+    #print("pedestal:", pedestal.shape)
+    #print("gains:", gains.shape)
+    #print("pedestal:", pedestal)
+    #print("gains:", gains)
 
     #disp.set_limits_minmax(0, 9000)
     disp.set_limits_percent(70)        # TODO
