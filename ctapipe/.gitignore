@@ -1,5 +1,6 @@
 data
 bigdata
+*.pdf
 *.png
 *.fits
 *.json
