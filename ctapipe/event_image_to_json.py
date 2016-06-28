@@ -9,12 +9,44 @@ import argparse
 
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
+import pyhessio
 
 from matplotlib import pyplot as plt
 
 import json
 
 import sys
+
+
+def get_mc_calibration_coeffs(tel_id):
+    """
+    Get the calibration coefficients from the MC data file to the
+    data. This is ahack (until we have a real data structure for the
+    calibrated data), it should move into `ctapipe.io.hessio_event_source`.
+
+    RETURNS
+    -------
+    (pedestal, gains) : arrays of the pedestal and pe/dc ratios.
+    """
+    pedestal = pyhessio.get_pedestal(tel_id)[0]
+    gains = pyhessio.get_calibration(tel_id)[0]
+
+    return pedestal, gains
+
+
+def apply_mc_calibration(adcs, tel_id):
+    """
+    Apply basic calibration
+    """
+    peds, gains = get_mc_calibration_coeffs(tel_id)
+
+    if adcs.ndim > 1:  # if it's per-sample need to correct the peds
+        # TODO ???
+        calibrated_image = ((adcs - peds[:, np.newaxis] / adcs.shape[1]) * gains[:, np.newaxis])
+    else:
+        calibrated_image = (adcs - peds) * gains
+
+    return calibrated_image
 
 
 def get_image_array(simtel_file_path, tel_id, event_id):
@@ -54,6 +86,9 @@ def get_image_array(simtel_file_path, tel_id, event_id):
     channel = 0       # TODO: save all channels
     image = event.dl0.tel[tel_id].adc_sums[channel]
 
+    pedestal_image, gains_image = get_mc_calibration_coeffs(tel_id)
+    calibrated_image = apply_mc_calibration(image, tel_id)
+
     # GET PHOTOELECTRON IMAGE #################################################
 
     pe_image = event.mc.tel[tel_id].photo_electrons
@@ -71,7 +106,10 @@ def get_image_array(simtel_file_path, tel_id, event_id):
             "event_id": event_id,
             "tel_id": tel_id,
             "image": image.tolist(),
+            "calibrated_image": calibrated_image.tolist(),
             "photoelectron_image": pe_image.tolist(),
+            "pedestal_image": pedestal_image.tolist(),
+            "gains_image": gains_image.tolist(),
             "camera_id": geom.cam_id,
             "pixel_type": geom.pix_type,
             "foclen": float(foclen.value),
