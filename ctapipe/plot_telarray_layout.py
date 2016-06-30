@@ -106,9 +106,9 @@ def plot_telarray_layout(simtel_file_path, show_labels=False):
     ax.set_xlabel("x position (m)", fontsize=16)
     ax.set_ylabel("y position (m)", fontsize=16)
 
-    plt.show()
-
     plt.savefig("telarray.pdf", bbox_inches='tight')
+
+    plt.show()
 
 
 if __name__ == '__main__':
