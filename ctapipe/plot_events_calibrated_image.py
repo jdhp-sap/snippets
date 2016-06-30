@@ -88,7 +88,7 @@ def show_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0,
     #for ii in range(data.shape[1]):
     #    disp.image = data[:, ii]
     #    disp.set_limits_percent(70)   # TODO
-    #    plt.savefig('CT{:03d}_EV{:05d}_S{:02d}.png'.format(tel_num, event_id, ii))
+    #    plt.savefig('CT{:03d}_EV{:05d}_S{:02d}.png'.format(tel_num, event_id, ii), bbox_inches='tight')
 
     # DISPLAY INTEGRATED EVENT ##############################################
 
@@ -103,7 +103,7 @@ def show_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0,
 
     # PLOT ##################################################################
 
-    plt.savefig(output_file_path)
+    plt.savefig(output_file_path, bbox_inches='tight')
 
     if not quiet:
         plt.show()

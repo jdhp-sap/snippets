@@ -66,7 +66,7 @@ def plot_json_image(json_file_path, output_file_path=None, plot_photoelectron=Fa
                 "_PE" if plot_photoelectron else ""
                 )
 
-    plt.savefig(output_file_path)
+    plt.savefig(output_file_path, bbox_inches='tight')
 
     if not quiet:
         plt.show()

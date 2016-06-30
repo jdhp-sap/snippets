@@ -80,7 +80,7 @@ def show_pedestal_image(simtel_file_path, output_file_path, tel_num, quiet=False
 
     # PLOT ##################################################################
 
-    plt.savefig(output_file_path)
+    plt.savefig(output_file_path, bbox_inches='tight')
 
     if not quiet:
         plt.show()

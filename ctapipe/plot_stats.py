@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     # Save file and plot ########
 
-    #plt.savefig("stats.pdf")
+    #plt.savefig("stats.pdf", bbox_inches='tight')
     plt.show()
 
     # PLOT MEAN IMAGE #########################################################

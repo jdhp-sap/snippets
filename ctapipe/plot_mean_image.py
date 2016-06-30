@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 "_PE" if process_photoelectron else ""
                 )
 
-    plt.savefig(output_file_path)
+    plt.savefig(output_file_path, bbox_inches='tight')
 
     if not quiet:
         plt.show()

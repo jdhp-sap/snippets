@@ -70,7 +70,7 @@ def show_image_histogram(simtel_file_path, output_file_path, tel_num, event_id, 
 
     # PLOT ####################################################################
 
-    plt.savefig(output_file_path)
+    plt.savefig(output_file_path, bbox_inches='tight')
 
     if not quiet:
         plt.show()
