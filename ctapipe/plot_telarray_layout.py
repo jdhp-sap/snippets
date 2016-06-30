@@ -29,7 +29,8 @@ def plot_telarray_layout(simtel_file_path, show_labels=False):
         # for the current event but the cumulated value of past events !      #
         #######################################################################
 
-        print("Event", event.dl0.event_id)
+        pass
+        #print("Event", event.dl0.event_id)
         #print("tels_with_trigger", event.trig.tels_with_trigger)
         #print("tels_with_data", event.dl0.tels_with_data)
         #print("optical_foclen", event.meta.optical_foclen)
@@ -89,7 +90,7 @@ def plot_telarray_layout(simtel_file_path, show_labels=False):
     #           c="gray",  # color
     #           alpha=0.25)
 
-    #for n in range(102-1, 125):
+    #for n in range(1-1, 4):
     #    ax.scatter(tel_array[n,1],    # x
     #               tel_array[n,2],    # y
     #               s=32,  # radius
@@ -106,6 +107,8 @@ def plot_telarray_layout(simtel_file_path, show_labels=False):
     ax.set_ylabel("y position (m)", fontsize=16)
 
     plt.show()
+
+    plt.savefig("telarray.pdf", bbox_inches='tight')
 
 
 if __name__ == '__main__':
