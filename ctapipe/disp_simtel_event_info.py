@@ -67,11 +67,11 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Display events info.")
 
-    parser.add_argument("--telescope", "-t", type=int,
+    parser.add_argument("--telescope", "-t", type=int, required=True,
                         metavar="INTEGER",
                         help="The telescope to query (telescope number)")
 
-    parser.add_argument("--event", "-e", type=int,
+    parser.add_argument("--event", "-e", type=int, required=True,
                         metavar="INTEGER",
                         help="The event to extract (event ID)")
 
