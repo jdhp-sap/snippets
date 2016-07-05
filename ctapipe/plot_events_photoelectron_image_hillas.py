@@ -67,7 +67,7 @@ def show_image(simtel_file_path, output_file_path, tel_num, event_id, channel=0,
     disp.set_limits_percent(70)        # TODO
 
     # Plot Hillas parameters
-    disp.overlay_moments(hillas, linewidth=3, color='blue')
+    disp.overlay_moments(hillas, linewidth=3, color='yellow')
 
     plt.savefig(output_file_path, bbox_inches='tight')
 
