@@ -49,18 +49,18 @@ def show_photoelectron_image(simtel_file_path, output_file_path, tel_num, event_
     disp.enable_pixel_picker()
     disp.add_colorbar()
 
-    disp.axes.set_title('CT{:03d}, event {:05d}'.format(tel_num, event_id))
+    disp.axes.set_title('Telescope {:03d}, Event {:05d}'.format(tel_num, event_id))
 
-    # DISPLAY INTEGRATED EVENT ##############################################
+    # GET PHOTOELECTRON IMAGE (CLEAN IMAGE) #################################
 
     # The photoelectron image "event.mc.tel[tel_num].photo_electrons" is a 1D numpy array with the same shape (dtype=int32)
     # Inspired by https://github.com/tino-michael/tino_cta/blob/e6cc6db3e64135c9ac92bce2dae6e6f81a36096a/sandbox/show_ADC_and_PE_per_event.py
     disp.image = event.mc.tel[tel_num].photo_electrons
 
+    # PLOT ##################################################################
+
     #disp.set_limits_minmax(0, 9000)
     disp.set_limits_percent(70)        # TODO
-
-    # PLOT ##################################################################
 
     plt.savefig(output_file_path, bbox_inches='tight')
 
