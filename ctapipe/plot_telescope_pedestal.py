@@ -66,12 +66,8 @@ def show_pedestal_image(simtel_file_path, output_file_path, tel_num, quiet=False
     pedestal, gains = get_mc_calibration_coeffs(tel_num)
     disp.image = pedestal
 
-    #print("pedestal:", pedestal.ndim)
-    #print("gains:", gains.ndim)
-    #print("pedestal:", pedestal.dtype)
-    #print("gains:", gains.dtype)
-    #print("pedestal:", pedestal.shape)
-    #print("gains:", gains.shape)
+    #print("pedestal: ndim={} shape={} dtype={}".format(pedestal.ndim, pedestal.shape, pedestal.dtype))
+    #print("gains: ndim={} shape={} dtype={}".format(gains.ndim, gains.shape, gains.dtype))
     #print("pedestal:", pedestal)
     #print("gains:", gains)
 
