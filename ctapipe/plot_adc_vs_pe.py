@@ -13,10 +13,12 @@ import ctapipe
 import ctapipe.visualization
 from ctapipe.io.hessio import hessio_event_source
 
+import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.colors import LogNorm
 
 
-def plot_data(simtel_file_path, output_file_path, tel_num, event_id, channel=0, quiet=False):
+def plot_data(simtel_file_path, output_file_path, tel_num, channel=0, quiet=False):
 
     # GET EVENT #############################################################
 
@@ -29,33 +31,37 @@ def plot_data(simtel_file_path, output_file_path, tel_num, event_id, channel=0, 
     # - allowed_tels: select only a subset of telescope, if None, all are read.
     source = hessio_event_source(simtel_file_path, allowed_tels=[tel_num])
 
-    event = None
+    adc_list = []
+    pe_list = []
 
-    for ev in source:
-        if int(ev.dl0.event_id) == event_id:
-            event = ev
-            break
+    for event in source:
+        # Get ADC image
+        adc_list.extend(event.dl0.tel[tel_num].adc_sums[channel].tolist())
 
-    if event is None:
-        raise Exception("Error: event '{}' not found for telescope '{}'.".format(event_id, tel_num))
+        # Get photoelectron image
+        pe_list.extend(event.mc.tel[tel_num].photo_electrons.tolist())
 
-
-    # Get ADC image
-    adc_array = event.dl0.tel[tel_num].adc_sums[channel]
-
-    # Get photoelectron image
-    pe_array = event.mc.tel[tel_num].photo_electrons
 
     # INIT PLOT ###############################################################
 
-    fig = plt.figure(figsize=(8.0, 8.0))
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
 
-    ax.plot(pe_array, adc_array, 'o')
+    ax.plot(pe_list, adc_list, '.')
+
+    #H = ax.hist2d(pe_list, adc_list, bins=1000, norm=LogNorm())
+    #fig.colorbar(H[3], ax=ax)
+
+    #ax.set_xlim([0, 60])
+
+    ax.set_title("PE vs ADC")
+
+    ax.set_xlabel("PE", fontsize=24)
+    ax.set_ylabel("ADC", fontsize=24)
 
     # PLOT ####################################################################
 
-    plt.savefig(output_file_path, bbox_inches='tight')
+    #plt.savefig(output_file_path, bbox_inches='tight')
+    plt.savefig(output_file_path)
 
     if not quiet:
         plt.show()
@@ -76,10 +82,6 @@ if __name__ == '__main__':
                         metavar="INTEGER",
                         help="The channel number to query")
 
-    parser.add_argument("--event", "-e", type=int, required=True,
-                        metavar="INTEGER",
-                        help="The event to extract (event ID)")
-
     parser.add_argument("--quiet", "-q", action="store_true",
                         help="Don't show the plot, just save it")
 
@@ -94,16 +96,15 @@ if __name__ == '__main__':
 
     tel_num = args.telescope
     channel = args.channel
-    event_id = args.event
     quiet = args.quiet
     simtel_file_path = args.fileargs[0]
 
     if args.output is None:
-        output_file_path = "TEL{:03d}_ADC_vs_PE.pdf".format(tel_num, event_id, channel)
+        output_file_path = "TEL{:03d}_ADC_vs_PE.png".format(tel_num)
     else:
         output_file_path = args.output
 
     # DISPLAY IMAGES ##########################################################
 
-    plot_data(simtel_file_path, output_file_path, tel_num, event_id, channel, quiet)
+    plot_data(simtel_file_path, output_file_path, tel_num, channel, quiet)
 
