@@ -26,6 +26,7 @@ def get_mc_calibration_coeffs(tel_id):
     -------
     (pedestal, gains) : arrays of the pedestal and pe/dc ratios.
     """
+
     pedestal = pyhessio.get_pedestal(tel_id)[0]
     gains = pyhessio.get_calibration(tel_id)[0]
 
