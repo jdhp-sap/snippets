@@ -17,29 +17,32 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm
 
 
-def plot_data(simtel_file_path, output_file_path, tel_num, channel=0, quiet=False):
-
-    # GET EVENT #############################################################
-
-    # hessio_event_source returns a Python generator that streams data from an
-    # EventIO/HESSIO MC data file (e.g. a standard CTA data file).
-    # This generator contains ctapipe.core.Container instances ("event").
-    # 
-    # Parameters:
-    # - max_events: maximum number of events to read
-    # - allowed_tels: select only a subset of telescope, if None, all are read.
-    source = hessio_event_source(simtel_file_path, allowed_tels=[tel_num])
+def plot_data(simtel_file_path_list, output_file_path, tel_num, channel=0, quiet=False):
 
     adc_list = []
     pe_list = []
 
-    for event in source:
-        # Get ADC image
-        adc_list.extend(event.dl0.tel[tel_num].adc_sums[channel].tolist())
+    for simtel_file_path in simtel_file_path_list:
 
-        # Get photoelectron image
-        pe_list.extend(event.mc.tel[tel_num].photo_electrons.tolist())
+        print(simtel_file_path)
 
+        # GET EVENT #############################################################
+
+        # hessio_event_source returns a Python generator that streams data from an
+        # EventIO/HESSIO MC data file (e.g. a standard CTA data file).
+        # This generator contains ctapipe.core.Container instances ("event").
+        # 
+        # Parameters:
+        # - max_events: maximum number of events to read
+        # - allowed_tels: select only a subset of telescope, if None, all are read.
+        source = hessio_event_source(simtel_file_path, allowed_tels=[tel_num])
+
+        for event in source:
+            # Get ADC image
+            adc_list.extend(event.dl0.tel[tel_num].adc_sums[channel].tolist())
+
+            # Get photoelectron image
+            pe_list.extend(event.mc.tel[tel_num].photo_electrons.tolist())
 
     # INIT PLOT ###############################################################
 
@@ -77,6 +80,10 @@ if __name__ == '__main__':
                         metavar="INTEGER",
                         help="The telescope to query (telescope number)")
 
+    parser.add_argument("--pmt", "-p", type=int, required=True,
+                        metavar="INTEGER",
+                        help="The telescope's PMT to query (i.e. the pixel ID)")
+
     parser.add_argument("--channel", "-c", type=int, default=0,
                         metavar="INTEGER",
                         help="The channel number to query")
@@ -88,15 +95,15 @@ if __name__ == '__main__':
                         metavar="FILE",
                         help="The output file path")
 
-    parser.add_argument("fileargs", nargs=1, metavar="FILE",
-                        help="The simtel file to process")
+    parser.add_argument("fileargs", nargs='+', metavar="FILES",
+                        help="The simtel files to process")
 
     args = parser.parse_args()
 
     tel_num = args.telescope
     channel = args.channel
     quiet = args.quiet
-    simtel_file_path = args.fileargs[0]
+    simtel_file_path_list = args.fileargs
 
     if args.output is None:
         output_file_path = "TEL{:03d}_CH{}_ADC_vs_PE.png".format(tel_num, channel)
@@ -105,5 +112,5 @@ if __name__ == '__main__':
 
     # DISPLAY IMAGES ##########################################################
 
-    plot_data(simtel_file_path, output_file_path, tel_num, channel, quiet)
+    plot_data(simtel_file_path_list, output_file_path, tel_num, channel, quiet)
 
