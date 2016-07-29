@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Extract simulated camera images from a simtel file.
-
-Inspired by ctapipe/examples/read_hessio_single_tel.py
+Plot the ADC signal vs PE for one given telescope (on all events of a given
+simtel file).
 """
 
 import argparse
@@ -53,7 +52,7 @@ def plot_data(simtel_file_path, output_file_path, tel_num, channel=0, quiet=Fals
 
     #ax.set_xlim([0, 60])
 
-    ax.set_title("PE vs ADC")
+    ax.set_title("Telescope {:03d} - Channel {}".format(tel_num, channel))
 
     ax.set_xlabel("PE", fontsize=24)
     ax.set_ylabel("ADC", fontsize=24)
@@ -100,7 +99,7 @@ if __name__ == '__main__':
     simtel_file_path = args.fileargs[0]
 
     if args.output is None:
-        output_file_path = "TEL{:03d}_ADC_vs_PE.png".format(tel_num)
+        output_file_path = "TEL{:03d}_CH{}_ADC_vs_PE.png".format(tel_num, channel)
     else:
         output_file_path = args.output
 
