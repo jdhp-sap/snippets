@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "****************************************************************************************"
+echo "* This script is deprecated, use ''extract_crop_and_plot_all_astri_images.py'' instead *"
+echo "****************************************************************************************"
+
 for SIMTEL_FILE in "$@"
 do
     echo "${SIMTEL_FILE}"
