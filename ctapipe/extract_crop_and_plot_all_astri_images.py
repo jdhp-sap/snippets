@@ -100,7 +100,8 @@ def apply_mc_calibration(adcs, tel_id, adc_treshold=3500.):
 
 def extract_images(simtel_file_path,
                    tel_id_filter_list=None,
-                   event_id_filter_list=None):
+                   event_id_filter_list=None,
+                   output_directory=None):
 
 
     # EXTRACT IMAGES ##########################################################
@@ -176,7 +177,14 @@ def extract_images(simtel_file_path,
                     # SAVE THE IMAGE ##########################################
 
                     output_file_path_template = "{}_TEL{:03d}_EV{:05d}.fits"
-                    output_file_path = output_file_path_template.format(simtel_file_path,
+
+                    if output_directory is not None:
+                        simtel_basename = os.path.basename(simtel_file_path)
+                        prefix = os.path.join(output_directory, simtel_basename)
+                    else:
+                        prefix = simtel_file_path
+
+                    output_file_path = output_file_path_template.format(prefix,
                                                                         tel_id,
                                                                         event_id)
 
@@ -278,6 +286,10 @@ def main():
                         metavar="INTEGER",
                         help="The event to extract (event ID)")
 
+    parser.add_argument("--output", "-o",
+                        metavar="DIRECTORY",
+                        help="The output directory")
+
     parser.add_argument("fileargs", nargs="+", metavar="FILE",
                         help="The simtel files to process")
 
@@ -286,7 +298,12 @@ def main():
     #tel_id_filter_list = args.telescope        # TODO: None or array
     tel_id_filter_list = DEFAULT_TEL_FILTER     # TODO: None or array
     event_id_filter_list = args.event           # TODO: None or array
+    output_directory = args.output
     simtel_file_path_list = args.fileargs
+
+    if output_directory is not None:
+        if not (os.path.exists(output_directory) and os.path.isdir(output_directory)):
+            raise Exception("{} does not exist or is not a directory.".format(output_directory))
 
     # ITERATE OVER SIMTEL FILES ###############################################
 
@@ -296,7 +313,7 @@ def main():
 
         # EXTRACT, CROP AND SAVE THE IMAGES ###################################
 
-        extract_images(simtel_file_path, tel_id_filter_list, event_id_filter_list)
+        extract_images(simtel_file_path, tel_id_filter_list, event_id_filter_list, output_directory)
 
 
 if __name__ == "__main__":
