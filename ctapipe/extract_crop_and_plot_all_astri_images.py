@@ -117,8 +117,6 @@ def extract_images(simtel_file_path,
 
     # ITERATE OVER EVENTS #####################################################
 
-    metadata = {}
-
     for event in source:
 
         event_id = int(event.dl0.event_id)
@@ -191,8 +189,9 @@ def extract_images(simtel_file_path,
                                                                         event_id,
                                                                         tel_id)
 
-
                     print("saving", output_file_path)
+
+                    metadata = {}
                     metadata['tel_id']=tel_id
                     metadata['opt_focl']=quantity_to_tuple(event.meta.optical_foclen[tel_id],'m')
 
