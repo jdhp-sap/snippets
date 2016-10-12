@@ -202,7 +202,7 @@ def extract_images(simtel_file_path,
                     metadata['mc_corex']= quantity_to_tuple(event.mc.core_x,'m')
                     metadata['mc_corey']=quantity_to_tuple(event.mc.core_y,'m')
 
-                    save_fits(cropped_img, cropped_pe_img, output_file_path,metadata)
+                    save_fits(cropped_img, cropped_pe_img, output_file_path, metadata)
 
 
 def crop_astri_image(input_img):
@@ -263,7 +263,7 @@ def crop_astri_image(input_img):
     return cropped_img
 
 
-def save_fits(img, pe_img, output_file_path,metadata):
+def save_fits(img, pe_img, output_file_path, metadata):
     """
     img is the image and it should be a 2D or a 3D numpy array with values.
     """
@@ -276,19 +276,20 @@ def save_fits(img, pe_img, output_file_path,metadata):
     hdu1 = fits.ImageHDU(pe_img)
 
     hdu_list = fits.HDUList([hdu0, hdu1])
-    for key, val in metadata.items():
-        if type(val) is not tuple:
-            hdu_list[0].header[key]=val
 
+    for key, val in metadata.items():
         if type(val) is tuple :
-            hdu_list[0].header[key]=val[0]
-            hdu_list[0].header.comments[key]=val[1]
+            hdu_list[0].header[key] = val[0]
+            hdu_list[0].header.comments[key] = val[1]
+        else:
+            hdu_list[0].header[key] = val
 
     if os.path.isfile(output_file_path):
         os.remove(output_file_path)
 
     hdu_list.writeto(output_file_path)
 
+           
 def quantity_to_tuple(qt,unit_str):
     """
     Splits a quantity into a tuple of (value,unit) where unit is FITS complient.
