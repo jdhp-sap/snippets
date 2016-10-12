@@ -48,7 +48,7 @@ def get_mc_calibration_coeffs(tel_id):
     Parameters
     ----------
     tel_id : int
-        The ID of the telescope to process. 
+        The ID of the telescope to process.
 
     Returns
     -------
@@ -70,9 +70,9 @@ def apply_mc_calibration(adcs, tel_id, adc_treshold=3500.):
     Parameters
     ----------
     adc : Numpy array
-        The uncalibrated ADC signal (one dimension per channel). 
+        The uncalibrated ADC signal (one dimension per channel).
     tel_id : int
-        The ID of the telescope to process. 
+        The ID of the telescope to process.
 
     Returns
     -------
@@ -86,7 +86,7 @@ def apply_mc_calibration(adcs, tel_id, adc_treshold=3500.):
 
     peds_ch0 = peds[0]
     peds_ch1 = peds[1]
-    
+
     # TODO ???
     #calibrated_image = ((adc - peds[:, np.newaxis] / adc.shape[1]) * gains[:, np.newaxis])
     # calibrated_image = (adc - peds) * gains
@@ -109,7 +109,7 @@ def extract_images(simtel_file_path,
     # hessio_event_source returns a Python generator that streams data from an
     # EventIO/HESSIO MC data file (e.g. a standard CTA data file).
     # This generator contains ctapipe.core.Container instances ("event").
-    # 
+    #
     # Parameters:
     # - max_events: maximum number of events to read
     # - allowed_tels: select only a subset of telescope, if None, all are read.
@@ -121,9 +121,9 @@ def extract_images(simtel_file_path,
 
         event_id = int(event.dl0.event_id)
 
-        print("event", event_id)
-
         if (event_id_filter_list is None) or (event_id in event_id_filter_list):
+
+            print("event", event_id)
 
             # ITERATE OVER IMAGES #############################################
 
@@ -173,10 +173,9 @@ def extract_images(simtel_file_path,
 
                     cropped_pe_img = crop_astri_image(pe_image)
 
-
                     # SAVE THE IMAGE ##########################################
 
-                    output_file_path_template = "{}_TEL{:03d}_EV{:05d}.fits"
+                    output_file_path_template = "{}_EV{:05d}_TEL{:03d}.fits"
 
                     if output_directory is not None:
                         simtel_basename = os.path.basename(simtel_file_path)
@@ -185,12 +184,25 @@ def extract_images(simtel_file_path,
                         prefix = simtel_file_path
 
                     output_file_path = output_file_path_template.format(prefix,
-                                                                        tel_id,
-                                                                        event_id)
+                                                                        event_id,
+                                                                        tel_id)
 
                     print("saving", output_file_path)
 
-                    save_fits(cropped_img, cropped_pe_img, output_file_path)
+                    metadata = {}
+                    metadata['tel_id']=tel_id
+                    metadata['opt_focl']=quantity_to_tuple(event.meta.optical_foclen[tel_id],'m')
+
+                    metadata['event_id']=event_id
+                    metadata['mc_energ']= quantity_to_tuple(event.mc.energy,'TeV')
+
+                    metadata['mc_az']= quantity_to_tuple(event.mc.az,'rad')
+                    metadata['mc_alt']= quantity_to_tuple(event.mc.alt,'rad')
+
+                    metadata['mc_corex']= quantity_to_tuple(event.mc.core_x,'m')
+                    metadata['mc_corey']=quantity_to_tuple(event.mc.core_y,'m')
+
+                    save_fits(cropped_img, cropped_pe_img, output_file_path, metadata)
 
 
 def crop_astri_image(input_img):
@@ -251,7 +263,7 @@ def crop_astri_image(input_img):
     return cropped_img
 
 
-def save_fits(img, pe_img, output_file_path):
+def save_fits(img, pe_img, output_file_path, metadata):
     """
     img is the image and it should be a 2D or a 3D numpy array with values.
     """
@@ -265,10 +277,32 @@ def save_fits(img, pe_img, output_file_path):
 
     hdu_list = fits.HDUList([hdu0, hdu1])
 
+    for key, val in metadata.items():
+        if type(val) is tuple :
+            hdu_list[0].header[key] = val[0]
+            hdu_list[0].header.comments[key] = val[1]
+        else:
+            hdu_list[0].header[key] = val
+
     if os.path.isfile(output_file_path):
         os.remove(output_file_path)
 
     hdu_list.writeto(output_file_path)
+
+           
+def quantity_to_tuple(qt, unit_str):
+    """
+    Splits a quantity into a tuple of (value,unit) where unit is FITS complient.
+    Useful to write FITS header keywords with units in a comment.
+    Parameters
+    ----------
+    qt : astropy quantity
+
+    unit_str: str
+        unit string representation readable by astropy.units (e.g. 'm', 'TeV', etc)
+
+    """
+    return qt.to(unit_str).value, qt.to(unit_str).unit.to_string(format='FITS')
 
 
 def main():
@@ -282,8 +316,8 @@ def main():
                         metavar="INTEGER",
                         help="The telescope to query (telescope number)")
 
-    parser.add_argument("--event", "-e", type=int,
-                        metavar="INTEGER",
+    parser.add_argument("--event", "-e",
+                        metavar="INTEGER LIST",
                         help="The event to extract (event ID)")
 
     parser.add_argument("--output", "-o",
@@ -297,7 +331,10 @@ def main():
 
     #tel_id_filter_list = args.telescope        # TODO: None or array
     tel_id_filter_list = DEFAULT_TEL_FILTER     # TODO: None or array
-    event_id_filter_list = args.event           # TODO: None or array
+
+    event_id_filter_list = [int(event_id_str) for event_id_str in args.event.split(",")]           # TODO: None or array
+
+
     output_directory = args.output
     simtel_file_path_list = args.fileargs
 
@@ -318,5 +355,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
