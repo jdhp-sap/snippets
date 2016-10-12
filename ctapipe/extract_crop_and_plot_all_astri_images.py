@@ -121,7 +121,6 @@ def extract_images(simtel_file_path,
 
         event_id = int(event.dl0.event_id)
 
-
         if (event_id_filter_list is None) or (event_id in event_id_filter_list):
 
             print("event", event_id)
@@ -174,7 +173,6 @@ def extract_images(simtel_file_path,
 
                     cropped_pe_img = crop_astri_image(pe_image)
 
-
                     # SAVE THE IMAGE ##########################################
 
                     output_file_path_template = "{}_EV{:05d}_TEL{:03d}.fits"
@@ -198,13 +196,11 @@ def extract_images(simtel_file_path,
                     metadata['event_id']=event_id
                     metadata['mc_energ']= quantity_to_tuple(event.mc.energy,'TeV')
 
-
                     metadata['mc_az']= quantity_to_tuple(event.mc.az,'rad')
                     metadata['mc_alt']= quantity_to_tuple(event.mc.alt,'rad')
 
                     metadata['mc_corex']= quantity_to_tuple(event.mc.core_x,'m')
                     metadata['mc_corey']=quantity_to_tuple(event.mc.core_y,'m')
-
 
                     save_fits(cropped_img, cropped_pe_img, output_file_path,metadata)
 
@@ -287,8 +283,6 @@ def save_fits(img, pe_img, output_file_path,metadata):
         if type(val) is tuple :
             hdu_list[0].header[key]=val[0]
             hdu_list[0].header.comments[key]=val[1]
-
-
 
     if os.path.isfile(output_file_path):
         os.remove(output_file_path)
