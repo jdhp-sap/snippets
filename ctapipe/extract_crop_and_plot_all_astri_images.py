@@ -290,7 +290,7 @@ def save_fits(img, pe_img, output_file_path, metadata):
     hdu_list.writeto(output_file_path)
 
            
-def quantity_to_tuple(qt,unit_str):
+def quantity_to_tuple(qt, unit_str):
     """
     Splits a quantity into a tuple of (value,unit) where unit is FITS complient.
     Useful to write FITS header keywords with units in a comment.
