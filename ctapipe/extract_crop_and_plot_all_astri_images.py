@@ -189,17 +189,14 @@ def extract_images(simtel_file_path,
                     print("saving", output_file_path)
 
                     metadata = {}
-                    metadata['tel_id']=tel_id
-                    metadata['opt_focl']=quantity_to_tuple(event.meta.optical_foclen[tel_id],'m')
-
-                    metadata['event_id']=event_id
-                    metadata['mc_energ']= quantity_to_tuple(event.mc.energy,'TeV')
-
-                    metadata['mc_az']= quantity_to_tuple(event.mc.az,'rad')
-                    metadata['mc_alt']= quantity_to_tuple(event.mc.alt,'rad')
-
-                    metadata['mc_corex']= quantity_to_tuple(event.mc.core_x,'m')
-                    metadata['mc_corey']=quantity_to_tuple(event.mc.core_y,'m')
+                    metadata['tel_id'] = tel_id
+                    metadata['foclen'] = quantity_to_tuple(event.meta.optical_foclen[tel_id], 'm')
+                    metadata['event_id'] = event_id
+                    metadata['mc_e'] =  quantity_to_tuple(event.mc.energy, 'TeV')
+                    metadata['mc_az'] = quantity_to_tuple(event.mc.az, 'rad')
+                    metadata['mc_alt'] = quantity_to_tuple(event.mc.alt, 'rad')
+                    metadata['mc_corex'] = quantity_to_tuple(event.mc.core_x, 'm')
+                    metadata['mc_corey'] = quantity_to_tuple(event.mc.core_y, 'm')
 
                     save_fits(cropped_img, cropped_pe_img, output_file_path, metadata)
 
@@ -264,51 +261,74 @@ def crop_astri_image(input_img):
 
 def save_fits(img, pe_img, output_file_path, metadata):
     """
-    img is the image and it should be a 2D or a 3D numpy array with values.
+    Write a FITS file containing pe_img, output_file_path and metadata.
+
+    Parameters
+    ----------
+    img: ndarray
+        The "input image" to save (it should be a 2D Numpy array).
+    pe_img: ndarray
+        The "reference image" to save (it should be a 2D Numpy array).
+    output_file_path: str
+        The path of the output FITS file.
+    metadata: tuple
+        A dictionary containing all metadata to write in the FITS file.
     """
 
-    if img.ndim not in (2, 3):
-        raise Exception("The input image should be a 2D or a 3D numpy array.")
+    if img.ndim != 2:
+        raise Exception("The input image should be a 2D numpy array.")
+
+    if pe_img.ndim != 2:
+        raise Exception("The input image should be a 2D numpy array.")
 
     # http://docs.astropy.org/en/stable/io/fits/appendix/faq.html#how-do-i-create-a-multi-extension-fits-file-from-scratch
     hdu0 = fits.PrimaryHDU(img)
     hdu1 = fits.ImageHDU(pe_img)
 
-    hdu_list = fits.HDUList([hdu0, hdu1])
-
     for key, val in metadata.items():
         if type(val) is tuple :
-            hdu_list[0].header[key] = val[0]
-            hdu_list[0].header.comments[key] = val[1]
+            hdu0.header[key] = val[0]
+            hdu0.header.comments[key] = val[1]
         else:
-            hdu_list[0].header[key] = val
+            hdu0.header[key] = val
 
     if os.path.isfile(output_file_path):
         os.remove(output_file_path)
 
+    hdu_list = fits.HDUList([hdu0, hdu1])
+
     hdu_list.writeto(output_file_path)
 
-           
-def quantity_to_tuple(qt, unit_str):
+
+def quantity_to_tuple(quantity, unit_str):
     """
     Splits a quantity into a tuple of (value,unit) where unit is FITS complient.
+
     Useful to write FITS header keywords with units in a comment.
+
     Parameters
     ----------
-    qt : astropy quantity
+    quantity : astropy quantity
+        The Astropy quantity to split.
 
+    Returns
+    -------
     unit_str: str
-        unit string representation readable by astropy.units (e.g. 'm', 'TeV', etc)
+        Unit string representation readable by astropy.units (e.g. 'm', 'TeV', ...)
 
+    Returns
+    -------
+    tuple
+        A tuple containing the value and the quantity.
     """
-    return qt.to(unit_str).value, qt.to(unit_str).unit.to_string(format='FITS')
+    return quantity.to(unit_str).value, quantity.to(unit_str).unit.to_string(format='FITS')
 
 
 def main():
 
     # PARSE OPTIONS ###########################################################
 
-    desc = "TODO."
+    desc = "Generate FITS files compliant for cleaning benchmark (from simtel files)."
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument("--telescope", "-t",
