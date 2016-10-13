@@ -103,7 +103,6 @@ def extract_images(simtel_file_path,
                    event_id_filter_list=None,
                    output_directory=None):
 
-
     # EXTRACT IMAGES ##########################################################
 
     # hessio_event_source returns a Python generator that streams data from an
@@ -312,13 +311,13 @@ def main():
     desc = "TODO."
     parser = argparse.ArgumentParser(description=desc)
 
-    parser.add_argument("--telescope", "-t", type=int,
-                        metavar="INTEGER",
-                        help="The telescope to query (telescope number)")
+    parser.add_argument("--telescope", "-t",
+                        metavar="INTEGER LIST",
+                        help="The telescopes to query (telescopes number separated by a comma)")
 
     parser.add_argument("--event", "-e",
                         metavar="INTEGER LIST",
-                        help="The event to extract (event ID)")
+                        help="The events to extract (events ID separated by a comma)")
 
     parser.add_argument("--output", "-o",
                         metavar="DIRECTORY",
@@ -329,11 +328,18 @@ def main():
 
     args = parser.parse_args()
 
-    #tel_id_filter_list = args.telescope        # TODO: None or array
-    tel_id_filter_list = DEFAULT_TEL_FILTER     # TODO: None or array
+    if args.telescope is None:
+        tel_id_filter_list = DEFAULT_TEL_FILTER
+    else:
+        tel_id_filter_list = [int(tel_id_str) for tel_id_str in args.telescope.split(",")]
 
-    event_id_filter_list = [int(event_id_str) for event_id_str in args.event.split(",")]           # TODO: None or array
+    if args.event is None:
+        event_id_filter_list = None
+    else:
+        event_id_filter_list = [int(event_id_str) for event_id_str in args.event.split(",")]
 
+    print("Telescopes:", tel_id_filter_list)
+    print("Events:", event_id_filter_list)
 
     output_directory = args.output
     simtel_file_path_list = args.fileargs
