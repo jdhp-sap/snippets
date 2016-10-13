@@ -192,7 +192,7 @@ def extract_images(simtel_file_path,
                     metadata['tel_id'] = tel_id
                     metadata['foclen'] = quantity_to_tuple(event.meta.optical_foclen[tel_id], 'm')
                     metadata['event_id'] = event_id
-                    metadata['mc_e'] =  quantity_to_tuple(event.mc.energy, 'TeV')
+                    metadata['energy'] =  quantity_to_tuple(event.mc.energy, 'TeV')
                     metadata['mc_az'] = quantity_to_tuple(event.mc.az, 'rad')
                     metadata['mc_alt'] = quantity_to_tuple(event.mc.alt, 'rad')
                     metadata['mc_corex'] = quantity_to_tuple(event.mc.core_x, 'm')
