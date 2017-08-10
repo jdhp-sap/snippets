@@ -30,6 +30,8 @@ import json
 import ctapipe
 from ctapipe.io.hessio import hessio_event_source
 
+from ctapipe.instrument import camera
+
 
 def list_telescopes_geometry(simtel_file_path):
     """Print the list of triggered telescopes ID and geometry of the
@@ -52,9 +54,9 @@ def list_telescopes_geometry(simtel_file_path):
     tel_geometry_dict = {}
 
     for tel_id in tel_id_set:
-        x, y = event.meta.pixel_pos[tel_id]
-        foclen = event.meta.optical_foclen[tel_id]
-        geom = ctapipe.io.CameraGeometry.guess(x, y, foclen)
+        x, y = event.inst.pixel_pos[tel_id]
+        foclen = event.inst.optical_foclen[tel_id]
+        geom = camera.CameraGeometry.guess(x, y, foclen)
         tel_geometry_dict[tel_id] = [geom.cam_id, geom.pix_type]
         print("Telescope {:03d}: {} ({} pixels)".format(tel_id, geom.cam_id, geom.pix_type))
 
